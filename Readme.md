@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ольга Дука](https://up.htmlacademy.ru/javascript/11/user/337127).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Большов](https://htmlacademy.ru/profile/id179111)
 
 ---
 
