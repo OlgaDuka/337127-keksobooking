@@ -48,7 +48,9 @@ for (var i = 0; i < 8; i++) {
   var locationX = getRandomInt(300, 900);
   var locationY = getRandomInt(100, 500);
   ads[i] = {
-    avatar: generateAvatar(i + 1),
+    author: {
+      avatar: generateAvatar(i + 1)
+    },
     offer: {
       title: generateTitle(offerTitles),
       address: locationX + ', ' + locationY,
@@ -71,3 +73,21 @@ for (var i = 0; i < 8; i++) {
 
 var mapStart = document.querySelector('.map');
 mapStart.classList.remove('map--faded');
+
+var listPins = document.querySelector('.map__pins');
+var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+
+var renderMapPin = function (ad) {
+  var mapPinElement = mapPinTemplate.cloneNode(true);
+  mapPinElement.querySelector('img').src = ad.author.avatar;
+  mapPinElement.querySelector('button').style.left = ad.location.x + 'px;';
+  mapPinElement.querySelector('button').style.top = ad.location.y + 'px;';
+
+  return mapPinElement;
+};
+
+var fragment = document.createDocumentFragment();
+for (i = 0; i < ads.length; i++) {
+  fragment.appendChild(renderMapPin(ads[i]));
+}
+listPins.appendChild(fragment);
