@@ -106,7 +106,7 @@ var mapCardTemplate = document.querySelector('template').content.querySelector('
 var renderMapCard = function (ad) {
   var mapCardElement = mapCardTemplate.cloneNode(true);
   mapCardElement.querySelector('h3').textContent = ad.offer.title;
-//  mapCardElement.querySelector('popup__price').textContent = toString(ad.offer.price) + '&#x20bd;/ночь';
+  //  mapCardElement.querySelector('popup__price').textContent = toString(ad.offer.price) + '&#x20bd;/ночь';
   mapCardElement.querySelector('small').textContent = ad.offer.address;
   switch (ad.offer.type) {
     case 'flat':
@@ -122,7 +122,7 @@ var renderMapCard = function (ad) {
   mapCardP[2].textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
   mapCardP[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
   mapCardP[4].textContent = ad.offer.description;
-//  mapCardElement.querySelector('.popup__features') - тут будет формироваться список. Отдельной функцией лучше?
+  // mapCardElement.querySelector('.popup__features') - тут будет формироваться список. Отдельной функцией лучше?
   return mapCardElement;
 };
 
