@@ -1,5 +1,5 @@
 'use strict';
-
+// Константы
 var OFFER_TITLES = ['Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -26,34 +26,87 @@ var coords = {
     max: 500
   }
 };
-
+// Переменные:
+// Массив объектов недвижимости
+var ads = [];
+// Строка со списком удобств
+var stringLi = '';
+// Копия массива названий объектов недвижимости
 var offerTitles = OFFER_TITLES.slice();
-var getRandomValueForArr = function (arr) {
-  return Math.floor(Math.random() * (arr.length));
-};
+// Главная часть страницы документа
+var mapStart = document.querySelector('.map');
+// Оъект DOM, содержащий список маркеров
+var listPins = document.querySelector('.map__pins');
+// Часть шаблона - маркер на карте Токио
+var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+// Часть шаблона - карточка объекта недвижимости
+var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
+//  Фрагмент документа, который формируется для вставки в документ
+var fragment = document.createDocumentFragment();
 
+// Функции:
+// Получение случайного целого значения
 var getRandomInt = function (minValue, maxValue) {
   return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 };
-
-var generateTitle = function (arr) {
-  var indexRandom = getRandomValueForArr(arr);
-  return arr.splice(indexRandom, 1);
-};
-
+// Формирование массива удобств для каждого объекта недвижимости
 var generateFeatures = function () {
   var offerFeatures = OFFER_FEATURES.slice();
-  var lengthArrRandom = getRandomValueForArr(offerFeatures);
+  var lengthArrRandom = getRandomInt(3, offerFeatures.length);
   var newOfferFeatures = [];
-  for (var i = 0; i < lengthArrRandom; i++) {
-    var indexRandom = getRandomValueForArr(offerFeatures);
+  for (var i = 0; i <= lengthArrRandom; i++) {
+    var indexRandom = getRandomInt(0, offerFeatures.length);
     newOfferFeatures[i] = offerFeatures.splice(indexRandom, 1);
   }
   return newOfferFeatures;
 };
+// Получение строки со списком удобств в соответствии с объектом для добавления в DOM
+var stringFeaturesLi = function (elem) {
+  stringLi += '<li class="feature feature--' + elem + '"></li>';
+  return stringLi;
+};
+// Формирование метки для объекта - заполнение данными из массива объектов
+var renderMapPin = function (ad) {
+  var mapPinElement = mapPinTemplate.cloneNode(true);
+  mapPinElement.querySelector('img').src = ad.author.avatar;
+  mapPinElement.style.left = ad.location.x + 'px';
+  mapPinElement.style.top = ad.location.y + 'px';
+  return mapPinElement;
+};
+// Формирование карточки объекта - заполнение данными из массива объектов
+var renderMapCard = function (ad) {
+  var mapCardElement = mapCardTemplate.cloneNode(true);
+  mapCardElement.querySelector('h3').textContent = ad.offer.title;
+  mapCardElement.querySelector('.popup__price').innerHTML = ad.offer.price + '&#x20bd;/ночь';
+  mapCardElement.querySelector('small').textContent = ad.offer.address;
+  switch (ad.offer.type) {
+    case 'flat':
+      mapCardElement.querySelector('h4').textContent = 'Квартира';
+      break;
+    case 'bungalo':
+      mapCardElement.querySelector('h4').textContent = 'Бунгало';
+      break;
+    case 'house':
+      mapCardElement.querySelector('h4').textContent = 'Дом';
+  }
+  var mapCardP = mapCardElement.querySelectorAll('p');
+  mapCardP[2].textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+  mapCardP[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
+  mapCardP[4].textContent = ad.offer.description;
+  var mapCardUl = mapCardElement.querySelector('.popup__features');
+  while (mapCardUl.firstChild) {
+    mapCardUl.removeChild(mapCardUl.firstChild);
+  }
+  ad.offer.features.forEach(stringFeaturesLi);
+  mapCardUl.insertAdjacentHTML('afterBegin', stringLi);
+  mapCardElement.appendChild(mapCardUl);
+  return mapCardElement;
+};
 
-var ads = [];
-
+// Реализация
+// Делаем страницу доступной для работы пользователя
+mapStart.classList.remove('map--faded');
+// Заполняем данными массив объектов недвижимости
 for (var i = 0; i < MAX_PINS; i++) {
   var locationX = getRandomInt(coords.x.min, coords.x.max);
   var locationY = getRandomInt(coords.y.min, coords.y.max);
@@ -62,7 +115,7 @@ for (var i = 0; i < MAX_PINS; i++) {
       avatar: 'img/avatars/user0' + (i + 1) + '.png',
     },
     offer: {
-      title: generateTitle(offerTitles),
+      title: offerTitles.splice(getRandomInt(0, offerTitles.length), 1),
       address: locationX + ', ' + locationY,
       price: getRandomInt(MIN_PRICE, MAX_PRICE),
       type: OFFER_TYPES[getRandomInt(0, 3)],
@@ -80,52 +133,15 @@ for (var i = 0; i < MAX_PINS; i++) {
     }
   };
 }
-
-var mapStart = document.querySelector('.map');
-mapStart.classList.remove('map--faded');
-
-var listPins = document.querySelector('.map__pins');
-var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
-
-var renderMapPin = function (ad) {
-  var mapPinElement = mapPinTemplate.cloneNode(true);
-  mapPinElement.querySelector('img').src = ad.author.avatar;
-  mapPinElement.style.left = ad.location.x + 'px';
-  mapPinElement.style.top = ad.location.y + 'px';
-  return mapPinElement;
-};
-
-var fragment = document.createDocumentFragment();
+// Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
 for (i = 0; i < ads.length; i++) {
   fragment.appendChild(renderMapPin(ads[i]));
 }
+// Добавляем маркеры на страницу
 listPins.appendChild(fragment);
-
-var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
-
-var renderMapCard = function (ad) {
-  var mapCardElement = mapCardTemplate.cloneNode(true);
-  mapCardElement.querySelector('h3').textContent = ad.offer.title;
-  //  mapCardElement.querySelector('popup__price').textContent = toString(ad.offer.price) + '&#x20bd;/ночь';
-  mapCardElement.querySelector('small').textContent = ad.offer.address;
-  switch (ad.offer.type) {
-    case 'flat':
-      mapCardElement.querySelector('h4').textContent = 'Квартира';
-      break;
-    case 'bungalo':
-      mapCardElement.querySelector('h4').textContent = 'Бунгало';
-      break;
-    case 'house':
-      mapCardElement.querySelector('h4').textContent = 'Дом';
-  }
-  var mapCardP = mapCardElement.querySelectorAll('p');
-  mapCardP[2].textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
-  mapCardP[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
-  mapCardP[4].textContent = ad.offer.description;
-  // mapCardElement.querySelector('.popup__features') - тут будет формироваться список. Отдельной функцией лучше?
-  return mapCardElement;
-};
-
+// Создаем новый пустой фрагмент
 fragment = document.createDocumentFragment();
+// Заполняем фрагмент данными из массива объектов для отрисовки первой карточки недвижимости
 fragment.appendChild(renderMapCard(ads[0]));
+// Добавляем карточку недвижимости на страницу
 mapStart.appendChild(fragment);
