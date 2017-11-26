@@ -16,6 +16,8 @@ var MAX_GUESTS = 10;
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
 var MAX_PINS = 8;
+var PIN_X = 46;
+var PIN_Y = 62;
 var coords = {
   x: {
     min: 300,
@@ -29,8 +31,6 @@ var coords = {
 // Переменные:
 // Массив объектов недвижимости
 var ads = [];
-// Строка со списком удобств
-var stringLi = '';
 // Копия массива названий объектов недвижимости
 var offerTitles = OFFER_TITLES.slice();
 // Главная часть страницы документа
@@ -59,11 +59,6 @@ var generateFeatures = function () {
     newOfferFeatures[i] = offerFeatures.splice(indexRandom, 1);
   }
   return newOfferFeatures;
-};
-// Получение строки со списком удобств в соответствии с объектом для добавления в DOM
-var stringFeaturesLi = function (elem) {
-  stringLi += '<li class="feature feature--' + elem + '"></li>';
-  return stringLi;
 };
 // Формирование метки для объекта - заполнение данными из массива объектов
 var renderMapPin = function (ad) {
@@ -94,11 +89,17 @@ var renderMapCard = function (ad) {
   mapCardP[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
   mapCardP[4].textContent = ad.offer.description;
   var mapCardUl = mapCardElement.querySelector('.popup__features');
-  while (mapCardUl.firstChild) {
-    mapCardUl.removeChild(mapCardUl.firstChild);
+  mapCardUl.innerHTML = '';
+  mapCardUl.insertAdjacentHTML('afterBegin', ad.offer.features.map(function (elem) {
+    return '<li class="feature feature--' + elem + '"></li>';
+  }));
+  // Удаляем текстовые узлы - запятые
+  var lenChildNode = mapCardUl.childNodes.length - 1;
+  for (var k = lenChildNode; k >= 0; k--) {
+    if (k % 2 === 1) {
+      mapCardUl.childNodes[k].remove();
+    }
   }
-  ad.offer.features.forEach(stringFeaturesLi);
-  mapCardUl.insertAdjacentHTML('afterBegin', stringLi);
   mapCardElement.appendChild(mapCardUl);
   return mapCardElement;
 };
@@ -108,8 +109,8 @@ var renderMapCard = function (ad) {
 mapStart.classList.remove('map--faded');
 // Заполняем данными массив объектов недвижимости
 for (var i = 0; i < MAX_PINS; i++) {
-  var locationX = getRandomInt(coords.x.min, coords.x.max);
-  var locationY = getRandomInt(coords.y.min, coords.y.max);
+  var locationX = getRandomInt(coords.x.min, coords.x.max) + PIN_X / 2;
+  var locationY = getRandomInt(coords.y.min, coords.y.max) + PIN_Y;
   ads[i] = {
     author: {
       avatar: 'img/avatars/user0' + (i + 1) + '.png',
@@ -134,9 +135,9 @@ for (var i = 0; i < MAX_PINS; i++) {
   };
 }
 // Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
-for (i = 0; i < ads.length; i++) {
-  fragment.appendChild(renderMapPin(ads[i]));
-}
+ads.forEach(function (elem) {
+  fragment.appendChild(renderMapPin(elem));
+});
 // Добавляем маркеры на страницу
 listPins.appendChild(fragment);
 // Создаем новый пустой фрагмент
