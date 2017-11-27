@@ -45,7 +45,7 @@ var offerTitles = OFFER_TITLES.slice();
 // Главная часть страницы документа
 var mapStart = document.querySelector('.map');
 // Оъект DOM, содержащий список маркеров
-var listPins = document.querySelector('.map__pins');
+var pinsContainer = document.querySelector('.map__pins');
 // Часть шаблона - маркер на карте Токио
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 // Часть шаблона - карточка объекта недвижимости
@@ -81,7 +81,7 @@ var generateFeatures = function () {
 };
 
 // Подготовка строки для вставки списка удобств
-var getStrFeatures = function (elem) {
+var getStringFeatures = function (elem) {
   return '<li class="feature feature--' + elem + '"></li>';
 };
 
@@ -139,7 +139,7 @@ var renderMapCard = function (ad) {
   mapCardP[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
   mapCardP[4].textContent = ad.offer.description;
   mapCardUl.innerHTML = '';
-  mapCardUl.insertAdjacentHTML('afterBegin', ad.offer.features.map(getStrFeatures).join(' '));
+  mapCardUl.insertAdjacentHTML('afterBegin', ad.offer.features.map(getStringFeatures).join(' '));
   mapCardElement.appendChild(mapCardUl);
   return mapCardElement;
 };
@@ -155,7 +155,7 @@ ads.forEach(function (elem) {
   fragment.appendChild(renderMapPin(elem));
 });
 // Добавляем маркеры на страницу
-listPins.appendChild(fragment);
+pinsContainer.appendChild(fragment);
 
 // Создаем новый пустой фрагмент
 fragment = document.createDocumentFragment();
