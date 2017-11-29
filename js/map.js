@@ -45,7 +45,7 @@ var offerTitles = OFFER_TITLES.slice();
 // Главная часть страницы документа
 var mapStart = document.querySelector('.map');
 // Маркер в центре карты
-var pinMain = mapStart.querySelector('.map_pin--main');
+var pinMain = mapStart.querySelector('.map__pin--main');
 // Оъект DOM, содержащий список маркеров
 var pinsContainer = mapStart.querySelector('.map__pins');
 // Часть шаблона - маркер на карте Токио
@@ -55,7 +55,7 @@ var mapCardTemplate = document.querySelector('template').content.querySelector('
 //  Фрагмент документа, который формируется для вставки в документ
 var fragment = document.createDocumentFragment();
 // Форма
-var form = mapStart.querySelector('notice__form');
+var formNotice = document.querySelector('.notice__form');
 
 // Функции:
 // Получение случайного целого значения, включая minValue и исключая maxValue
@@ -170,5 +170,5 @@ mapStart.appendChild(fragmentCard);
 pinMain.addEventListener('mouseup', function () {
   mapStart.classList.remove('map--faded');
   pinsContainer.appendChild(fragment);
-  form.classList.remove('notice__form--disabled');
+  formNotice.classList.remove('notice__form--disabled');
 });
