@@ -44,14 +44,18 @@ var ads = [];
 var offerTitles = OFFER_TITLES.slice();
 // Главная часть страницы документа
 var mapStart = document.querySelector('.map');
+// Маркер в центре карты
+var pinMain = mapStart.querySelector('.map_pin--main');
 // Оъект DOM, содержащий список маркеров
-var pinsContainer = document.querySelector('.map__pins');
+var pinsContainer = mapStart.querySelector('.map__pins');
 // Часть шаблона - маркер на карте Токио
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 // Часть шаблона - карточка объекта недвижимости
 var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
 //  Фрагмент документа, который формируется для вставки в документ
 var fragment = document.createDocumentFragment();
+// Форма
+var form = mapStart.querySelector('notice__form');
 
 // Функции:
 // Получение случайного целого значения, включая minValue и исключая maxValue
@@ -145,8 +149,6 @@ var renderMapCard = function (ad) {
 };
 
 // Реализация
-// Делаем страницу доступной для работы пользователя
-mapStart.classList.remove('map--faded');
 
 // Создаем и заполняем данными массив объектов недвижимости
 ads = generateAds(MAX_PINS);
@@ -155,11 +157,18 @@ ads.forEach(function (elem) {
   fragment.appendChild(renderMapPin(elem));
 });
 // Добавляем маркеры на страницу
-pinsContainer.appendChild(fragment);
+// pinsContainer.appendChild(fragment);
 
 // Создаем новый пустой фрагмент
-fragment = document.createDocumentFragment();
+var fragmentCard = document.createDocumentFragment();
 // Заполняем фрагмент данными из массива объектов для отрисовки первой карточки недвижимости
 fragment.appendChild(renderMapCard(ads[0]));
 // Добавляем карточку недвижимости на страницу
-mapStart.appendChild(fragment);
+mapStart.appendChild(fragmentCard);
+
+// Делаем страницу доступной для работы пользователя
+pinMain.addEventListener('mouseup', function () {
+  mapStart.classList.remove('map--faded');
+  pinsContainer.appendChild(fragment);
+  form.classList.remove('notice__form--disabled');
+});
