@@ -1,6 +1,8 @@
 'use strict';
 
 // Константы
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 var OFFER_TITLES = ['Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -40,6 +42,8 @@ var offerType = {
 };
 // Массив объектов недвижимости
 var ads = [];
+// Массив маркеров
+var mapPins = [];
 // Копия массива названий объектов недвижимости
 var offerTitles = OFFER_TITLES.slice();
 // Главная часть страницы документа
@@ -52,8 +56,14 @@ var pinsContainer = mapStart.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 // Часть шаблона - карточка объекта недвижимости
 var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
+var mapCard = mapCardTemplate.cloneNode(true);
+var mapCardP = mapCard.querySelectorAll('p');
+var mapCardUl = mapCard.querySelector('.popup__features');
+var mapCardClose = mapCard.querySelector('.popup__close');
 //  Фрагмент документа, который формируется для вставки в документ
 var fragment = document.createDocumentFragment();
+// Фрагмент для карточки
+var fragmentCard = document.createDocumentFragment();
 // Форма
 var formNotice = document.querySelector('.notice__form');
 
@@ -96,7 +106,7 @@ var generateAds = function (numberObj) {
     var locationY = getRandomInt(coords.y.min, coords.y.max);
     ads[i] = {
       author: {
-        avatar: 'img/avatars/user0' + +i + '.png',
+        avatar: 'img/avatars/user0' + (i + 1) + '.png',
       },
       offer: {
         title: offerTitles.splice(getRandomInt(0, offerTitles.length), 1),
@@ -131,44 +141,95 @@ var renderMapPin = function (ad) {
 
 // Формирование карточки объекта - заполнение данными из массива объектов
 var renderMapCard = function (ad) {
-  var mapCardElement = mapCardTemplate.cloneNode(true);
-  var mapCardP = mapCardElement.querySelectorAll('p');
-  var mapCardUl = mapCardElement.querySelector('.popup__features');
-
-  mapCardElement.querySelector('h3').textContent = ad.offer.title;
-  mapCardElement.querySelector('.popup__price').innerHTML = ad.offer.price + '&#x20bd;/ночь';
-  mapCardElement.querySelector('small').textContent = ad.offer.address;
-  mapCardElement.querySelector('h4').textContent = offerType[ad.offer.type];
+  mapCard.querySelector('img').src = ad.author.avatar;
+  mapCard.querySelector('h3').textContent = ad.offer.title;
+  mapCard.querySelector('.popup__price').innerHTML = ad.offer.price + '&#x20bd;/ночь';
+  mapCard.querySelector('small').textContent = ad.offer.address;
+  mapCard.querySelector('h4').textContent = offerType[ad.offer.type];
   mapCardP[2].textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
   mapCardP[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
   mapCardP[4].textContent = ad.offer.description;
   mapCardUl.innerHTML = '';
   mapCardUl.insertAdjacentHTML('afterBegin', ad.offer.features.map(getStringFeatures).join(' '));
-  mapCardElement.appendChild(mapCardUl);
-  return mapCardElement;
+  mapCard.appendChild(mapCardUl);
+  return mapCard;
 };
 
-// Реализация
+// Функции для обработки событий
+var pageActive = function () {
+  // Активируем страницу - убираем затемнение
+  mapStart.classList.remove('map--faded');
+  // Добавляем маркеры на страницу
+  pinsContainer.appendChild(fragment);
+  mapPins = pinsContainer.querySelectorAll('.map__pin');
+  // Активируем форму
+  formNotice.classList.remove('notice__form--disabled');
+};
 
+// Инициализация
 // Создаем и заполняем данными массив объектов недвижимости
 ads = generateAds(MAX_PINS);
 // Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
 ads.forEach(function (elem) {
   fragment.appendChild(renderMapPin(elem));
 });
-// Добавляем маркеры на страницу
-// pinsContainer.appendChild(fragment);
-
-// Создаем новый пустой фрагмент
-var fragmentCard = document.createDocumentFragment();
-// Заполняем фрагмент данными из массива объектов для отрисовки первой карточки недвижимости
-fragment.appendChild(renderMapCard(ads[0]));
-// Добавляем карточку недвижимости на страницу
+// Заполняем фрагмент данными из массива объектов для отрисовки карточки
+fragmentCard.appendChild(renderMapCard(ads[0]));
+// Добавляем карточку недвижимости на страницу и скрываем ее
 mapStart.appendChild(fragmentCard);
+mapCard.classList.add('hidden');
 
+
+// Реакция на нажатие ESC
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+// Открыть карточку
+var openPopup = function () {
+  mapCard.classList.remove('hidden');
+  document.addEventListener('keydown', onPopupEscPress);
+};
+// Закрыть карточку
+var closePopup = function () {
+  mapCard.classList.add('hidden');
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+// Обработчики событий
 // Делаем страницу доступной для работы пользователя
 pinMain.addEventListener('mouseup', function () {
-  mapStart.classList.remove('map--faded');
-  pinsContainer.appendChild(fragment);
-  formNotice.classList.remove('notice__form--disabled');
+  pageActive();
+});
+
+// Клик на маркер ловим на контейнере, target - img внутри кнопки
+pinsContainer.addEventListener('click', function (evt) {
+  var x = evt.target.parentNode.style.left;
+  var y = evt.target.parentNode.style.top;
+  var numPin = -1;
+
+  for (var i = 0; i < mapPins.length; i++) {
+    mapPins[i].classList.remove('map__pin--active');
+    if ((x === mapPins[i].style.left) && (y === mapPins[i].style.top)) {
+      numPin = i;
+      evt.target.parentNode.classList.add('map__pin--active');
+    }
+  }
+  if (numPin !== -1) {
+    // Заполняем DOM-ноду карточки данными из массива объектов
+    renderMapCard(ads[numPin - 1]);
+    openPopup(evt);
+  }
+});
+
+// Закрытие карточки по нажатию мышки
+mapCardClose.addEventListener('click', function () {
+  closePopup();
+});
+// Закрытие карточки с клавиатуры
+mapCardClose.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closePopup();
+  }
 });
