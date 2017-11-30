@@ -219,7 +219,7 @@ pinsContainer.addEventListener('click', function (evt) {
   if (numPin !== -1) {
     // Заполняем DOM-ноду карточки данными из массива объектов
     renderMapCard(ads[numPin - 1]);
-    openPopup(evt);
+    openPopup();
   }
 });
 
