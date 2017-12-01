@@ -131,11 +131,13 @@ var generateAds = function (numberObj) {
 };
 
 // Формирование метки для объекта - заполнение данными из массива объектов
-var renderMapPin = function (ad) {
+var renderMapPin = function (ad, i) {
   var mapPinElement = mapPinTemplate.cloneNode(true);
   mapPinElement.querySelector('img').src = ad.author.avatar;
   mapPinElement.style.left = pinStrX(ad.location.x);
   mapPinElement.style.top = pinStrY(ad.location.y);
+  mapPinElement.dataset.numPin = i;
+  fragment.appendChild(mapPinElement);
   return mapPinElement;
 };
 
@@ -194,10 +196,7 @@ var closePopup = function () {
 // Создаем и заполняем данными массив объектов недвижимости
 ads = generateAds(MAX_PINS);
 // Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
-ads.forEach(function (elem, i) {
-  var pin = fragment.appendChild(renderMapPin(elem));
-  pin.dataset.numPin = i;
-});
+ads.forEach(renderMapPin);
 // Заполняем фрагмент данными из массива объектов для отрисовки карточки
 fragmentCard.appendChild(renderMapCard(ads[0]));
 // Добавляем карточку недвижимости на страницу и скрываем ее
@@ -221,9 +220,11 @@ pinsContainer.addEventListener('click', function (evt) {
       }
       target.classList.add('map__pin--active');
       currentPin = target;
-      // Заполняем DOM-ноду карточки данными из массива объектов
-      renderMapCard(ads[target.dataset.numPin]);
-      openPopup();
+      if (!target.classList.contains('map__pin--main')) {
+        // Заполняем DOM-ноду карточки данными из массива объектов
+        renderMapCard(ads[target.dataset.numPin]);
+        openPopup();
+      }
       return;
     }
     target = target.parentNode;
