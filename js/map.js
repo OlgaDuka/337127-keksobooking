@@ -42,8 +42,8 @@ var offerType = {
 };
 // Массив объектов недвижимости
 var ads = [];
-// Массив маркеров
-var mapPins = [];
+// Текущий маркер
+var currentPin = false;
 // Копия массива названий объектов недвижимости
 var offerTitles = OFFER_TITLES.slice();
 // Главная часть страницы документа
@@ -156,29 +156,16 @@ var renderMapCard = function (ad) {
 };
 
 // Функции для обработки событий
+
+// Начало работы
 var pageActive = function () {
   // Активируем страницу - убираем затемнение
   mapStart.classList.remove('map--faded');
   // Добавляем маркеры на страницу
   pinsContainer.appendChild(fragment);
-  mapPins = pinsContainer.querySelectorAll('.map__pin');
   // Активируем форму
   formNotice.classList.remove('notice__form--disabled');
 };
-
-// Инициализация
-// Создаем и заполняем данными массив объектов недвижимости
-ads = generateAds(MAX_PINS);
-// Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
-ads.forEach(function (elem) {
-  fragment.appendChild(renderMapPin(elem));
-});
-// Заполняем фрагмент данными из массива объектов для отрисовки карточки
-fragmentCard.appendChild(renderMapCard(ads[0]));
-// Добавляем карточку недвижимости на страницу и скрываем ее
-mapStart.appendChild(fragmentCard);
-mapCard.classList.add('hidden');
-
 
 // Реакция на нажатие ESC
 var onPopupEscPress = function (evt) {
@@ -186,18 +173,39 @@ var onPopupEscPress = function (evt) {
     closePopup();
   }
 };
+
 // Открыть карточку
 var openPopup = function () {
   mapCard.classList.remove('hidden');
   document.addEventListener('keydown', onPopupEscPress);
 };
+
 // Закрыть карточку
 var closePopup = function () {
   mapCard.classList.add('hidden');
+  if (currentPin !== false) {
+    currentPin.classList.remove('map__pin--active');
+    currentPin = false;
+  }
   document.removeEventListener('keydown', onPopupEscPress);
 };
 
-// Обработчики событий
+// Инициализация
+// Создаем и заполняем данными массив объектов недвижимости
+ads = generateAds(MAX_PINS);
+// Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
+ads.forEach(function (elem, i) {
+  var pin = fragment.appendChild(renderMapPin(elem));
+  pin.dataset.numPin = i;
+});
+// Заполняем фрагмент данными из массива объектов для отрисовки карточки
+fragmentCard.appendChild(renderMapCard(ads[0]));
+// Добавляем карточку недвижимости на страницу и скрываем ее
+mapStart.appendChild(fragmentCard);
+mapCard.classList.add('hidden');
+
+// Обработка событий
+
 // Делаем страницу доступной для работы пользователя
 pinMain.addEventListener('mouseup', function () {
   pageActive();
@@ -205,21 +213,20 @@ pinMain.addEventListener('mouseup', function () {
 
 // Клик на маркер ловим на контейнере, target - img внутри кнопки
 pinsContainer.addEventListener('click', function (evt) {
-  var x = evt.target.parentNode.style.left;
-  var y = evt.target.parentNode.style.top;
-  var numPin = -1;
-
-  for (var i = 0; i < mapPins.length; i++) {
-    mapPins[i].classList.remove('map__pin--active');
-    if ((x === mapPins[i].style.left) && (y === mapPins[i].style.top)) {
-      numPin = i;
-      evt.target.parentNode.classList.add('map__pin--active');
+  var target = evt.target;
+  while (target !== pinsContainer) {
+    if (target.tagName === 'BUTTON') {
+      if (currentPin !== false) {
+        currentPin.classList.remove('map__pin--active');
+      }
+      target.classList.add('map__pin--active');
+      currentPin = target;
+      // Заполняем DOM-ноду карточки данными из массива объектов
+      renderMapCard(ads[target.dataset.numPin]);
+      openPopup();
+      return;
     }
-  }
-  if (numPin !== -1) {
-    // Заполняем DOM-ноду карточки данными из массива объектов
-    renderMapCard(ads[numPin - 1]);
-    openPopup();
+    target = target.parentNode;
   }
 });
 
@@ -227,6 +234,7 @@ pinsContainer.addEventListener('click', function (evt) {
 mapCardClose.addEventListener('click', function () {
   closePopup();
 });
+
 // Закрытие карточки с клавиатуры
 mapCardClose.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
