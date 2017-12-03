@@ -13,7 +13,7 @@ var OFFER_TITLES = ['Большая уютная квартира',
   'Некрасивый негостеприимный домик',
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'];
-var OFFER_TYPES = ['flat', 'house', 'bungalo'];
+var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
 var OFFER_CHECKS = ['12:00', '13:00', '14:00'];
 var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var MAX_ROOMS = 6;
@@ -39,8 +39,31 @@ var coords = {
 var offerType = {
   flat: 'Квартира',
   house: 'Дом',
-  bungalo: 'Бунгало'
+  bungalo: 'Бунгало',
+  palace: 'Дворец'
 };
+// Объект соответствия типов недвижимости
+var offerTypePrice = {
+  flat: 1000,
+  bungalo: 0,
+  house: 5000,
+  palace: 10000
+};
+// Объект соответствия количества комнат количеству возможных гостей
+var capacityOfRooms = {
+  0: {100: 'не для гостей'},
+  1: {1: 'для одного гостя'},
+  2: {
+    1: 'для одного гостя',
+    2: 'для двух гостей'
+  },
+  3: {
+    1: 'для одного гостя',
+    2: 'для двух гостей',
+    3: 'для 3 гостей'
+  },
+};
+
 // Массив объектов недвижимости
 var ads = [];
 // Текущий маркер
@@ -156,6 +179,10 @@ var renderMapCard = function (ad) {
   return mapCard;
 };
 
+// =========================================================================
+// События в процессе работы сайта
+// =========================================================================
+
 // Функции для обработки событий
 // Начало работы - нажатие на центральный маркер
 var onPageStartMouseUp = function () {
@@ -235,7 +262,80 @@ mapCardClose.addEventListener('click', onCardCloseClick);
 // Закрытие карточки с клавиатуры
 mapCardClose.addEventListener('keydown', onCardCloseEnterPress);
 
+// =====================================================================
+// Валидациия формы
+// =====================================================================
+// Переменные
+var titleHousing = formNotice.querySelector('#title');
+var typeHousing = formNotice.querySelector('#type');
+var priceHousing = formNotice.querySelector('#price');
+var timeInHousing = formNotice.querySelector('#timein');
+var timeOutHousing = formNotice.querySelector('#timeout');
+var roomNamberHousing = formNotice.querySelector('#room_number');
+var capacityHousing = formNotice.querySelector('#capacity');
+
+// Функции для обработчиков событий
+// для заголовка
+var onInvalidInput = function () {
+  if (titleHousing.validity.tooShort) {
+    titleHousing.setCustomValidity('Заголовок должен быть не менее 30-ти символов');
+  } else if (titleHousing.validity.valueMissing) {
+    titleHousing.setCustomValidity('Обязательное поле');
+  } else {
+    titleHousing.setCustomValidity('');
+  }
+};
+
+// Автоввод времени выезда при изменении времени въезда
+var onChangeTimeIn = function () {
+  timeOutHousing.selectedIndex = timeInHousing.selectedIndex;
+};
+// Автоввод времени въезда при изменении времени выезда
+var onChangeTimeOut = function () {
+  timeInHousing.selectedIndex = timeOutHousing.selectedIndex;
+};
+
+// Изменение минимальной стоимости жилья
+var onChangeType = function () {
+  priceHousing.min = offerTypePrice[typeHousing.options[typeHousing.selectedIndex].value];
+};
+
+// Проверка введенной суммы на валидность
+var onInvalidInputPrice = function () {
+  if (priceHousing.validity.rangeUnderflow) {
+    priceHousing.setCustomValidity('Стоимость жилья ниже рекомендованной');
+  } else if (priceHousing.validity.rangeOverflow) {
+    priceHousing.setCustomValidity('Стоимость жилья слишком высока');
+  } else if (priceHousing.validity.valueMissing) {
+    priceHousing.setCustomValidity('Обязательное поле');
+  } else {
+    priceHousing.setCustomValidity('');
+  }
+};
+
+// Изменение select количества гостей в зависимости от изменения количества комнат
+// Еще не придумала
+var onChangeRoomNumber = function () {
+  console.log(capacityHousing + capacityOfRooms[0]);
+};
+
+// Обработчики событий
+// проверка ввода заголовка
+titleHousing.addEventListener('invalid', onInvalidInput);
+// Событие изменения времени въезда
+timeInHousing.addEventListener('change', onChangeTimeIn);
+// Событие изменения времени выезда
+timeOutHousing.addEventListener('change', onChangeTimeOut);
+// Событие изменения типа жилья
+typeHousing.addEventListener('change', onChangeType);
+// Проверка ввода суммы стоимости за ночь
+priceHousing.addEventListener('invalid', onInvalidInputPrice);
+// Событие изменения количества комнат
+roomNamberHousing.addEventListener('change', onChangeRoomNumber);
+
+// =========================================================================
 // Инициализация и начало работы
+// =========================================================================
 // Создаем и заполняем данными массив объектов недвижимости
 ads = generateAds(MAX_PINS);
 // Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
