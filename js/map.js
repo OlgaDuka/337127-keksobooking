@@ -51,17 +51,10 @@ var offerTypePrice = {
 };
 // Объект соответствия количества комнат количеству возможных гостей
 var capacityOfRooms = {
-  0: {100: 'не для гостей'},
-  1: {1: 'для одного гостя'},
-  2: {
-    1: 'для одного гостя',
-    2: 'для двух гостей'
-  },
-  3: {
-    1: 'для одного гостя',
-    2: 'для двух гостей',
-    3: 'для 3 гостей'
-  },
+  0: [2],
+  1: [1, 2],
+  2: [0, 1, 2],
+  3: [3]
 };
 
 // Массив объектов недвижимости
@@ -313,10 +306,35 @@ var onInvalidInputPrice = function () {
   }
 };
 
+var capacityOptionActivate = function (i) {
+  capacityHousing.options[i].classList.remove('hidden');
+};
+
+var capacityOptionDeActivate = function (i) {
+  capacityHousing.options[i].classList.add('hidden');
+};
+
 // Изменение select количества гостей в зависимости от изменения количества комнат
-// Еще не придумала
 var onChangeRoomNumber = function () {
-  console.log(capacityHousing + capacityOfRooms[0]);
+  var lenCapacitySelectDef = capacityHousing.options.length;
+  var arrCapacitySelect = capacityOfRooms[roomNamberHousing.selectedIndex];
+  var lenCapacitySelect = arrCapacitySelect.length;
+  for (var i = 0; i < lenCapacitySelectDef; i++) {
+    capacityOptionActivate(i);
+  }
+  for (i = 0; i < lenCapacitySelectDef; i++) {
+    var search = false;
+    for (var j = 0; j < lenCapacitySelect; j++) {
+      if (arrCapacitySelect[j] === i) {
+        search = true;
+        break;
+      }
+    }
+    if (!search) {
+      capacityOptionDeActivate(i);
+    }
+  }
+  capacityHousing.selectedIndex = arrCapacitySelect[0];
 };
 
 // Обработчики событий
