@@ -260,6 +260,7 @@ mapCardClose.addEventListener('keydown', onCardCloseEnterPress);
 // =====================================================================
 // Переменные
 var titleHousing = formNotice.querySelector('#title');
+var addressHousing = formNotice.querySelector('#address');
 var typeHousing = formNotice.querySelector('#type');
 var priceHousing = formNotice.querySelector('#price');
 var timeInHousing = formNotice.querySelector('#timein');
@@ -337,6 +338,11 @@ var onChangeRoomNumber = function () {
   capacityHousing.selectedIndex = arrCapacitySelect[0];
 };
 
+// Проверка правильности заполнения формы
+var onSubmitNotice = function (evt) {
+// evt.preventDefault(); Не понимаю, что сюда надо писать, если все поля уже проверяются на этапе ввода данных.
+};
+
 // Обработчики событий
 // проверка ввода заголовка
 titleHousing.addEventListener('invalid', onInvalidInput);
@@ -350,6 +356,8 @@ typeHousing.addEventListener('change', onChangeType);
 priceHousing.addEventListener('invalid', onInvalidInputPrice);
 // Событие изменения количества комнат
 roomNamberHousing.addEventListener('change', onChangeRoomNumber);
+// Событие отправка формы
+formNotice.addEventListener('submit', onSubmitNotice);
 
 // =========================================================================
 // Инициализация и начало работы
@@ -361,3 +369,4 @@ ads.forEach(renderMapPin);
 // Добавляем карточку недвижимости на страницу и скрываем ее
 mapStart.appendChild(mapCard);
 mapCard.classList.add('hidden');
+addressHousing.value = 'Адрес маленькой лачуги на берегу Японского залива';
