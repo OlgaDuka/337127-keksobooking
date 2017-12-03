@@ -339,7 +339,7 @@ var onChangeRoomNumber = function () {
 };
 
 // Проверка правильности заполнения формы
-var onSubmitNotice = function (evt) {
+var onSubmitNotice = function () {
 // evt.preventDefault(); Не понимаю, что сюда надо писать, если все поля уже проверяются на этапе ввода данных.
 };
 
