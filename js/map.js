@@ -1,8 +1,10 @@
 'use strict';
 
 // Константы
-var ESC_KEYCODE = 27;
-var ENTER_KEYCODE = 13;
+var keyCodes = {
+  ESC: 27,
+  NTER: 13
+};
 var OFFER_TITLES = ['Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -11,7 +13,7 @@ var OFFER_TITLES = ['Большая уютная квартира',
   'Некрасивый негостеприимный домик',
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'];
-var OFFER_TYPES = ['flat', 'house', 'bungalo'];
+var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
 var OFFER_CHECKS = ['12:00', '13:00', '14:00'];
 var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var MAX_ROOMS = 6;
@@ -19,7 +21,6 @@ var MAX_GUESTS = 10;
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
 var MAX_PINS = 8;
-var PIN_X = 46;
 var PIN_Y = 62;
 
 // Переменные:
@@ -38,8 +39,24 @@ var coords = {
 var offerType = {
   flat: 'Квартира',
   house: 'Дом',
-  bungalo: 'Бунгало'
+  bungalo: 'Бунгало',
+  palace: 'Дворец'
 };
+// Объект соответствия типов недвижимости
+var offerTypePrice = {
+  flat: 1000,
+  bungalo: 0,
+  house: 5000,
+  palace: 10000
+};
+// Объект соответствия количества комнат количеству возможных гостей
+var capacityOfRooms = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
+};
+
 // Массив объектов недвижимости
 var ads = [];
 // Текущий маркер
@@ -62,8 +79,6 @@ var mapCardUl = mapCard.querySelector('.popup__features');
 var mapCardClose = mapCard.querySelector('.popup__close');
 //  Фрагмент документа, который формируется для вставки в документ
 var fragment = document.createDocumentFragment();
-// Фрагмент для карточки
-var fragmentCard = document.createDocumentFragment();
 // Форма
 var formNotice = document.querySelector('.notice__form');
 
@@ -73,9 +88,9 @@ var getRandomInt = function (minValue, maxValue) {
   return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 };
 
-// Вычисление смещения маркера относительно координат объекта недвижимости
+// Строковые координаты маркера (со смещением по Y)
 var pinStrX = function (x) {
-  return (x - PIN_X / 2) + 'px';
+  return x + 'px';
 };
 
 var pinStrY = function (y) {
@@ -157,10 +172,13 @@ var renderMapCard = function (ad) {
   return mapCard;
 };
 
-// Функции для обработки событий
+// =========================================================================
+// События в процессе работы сайта
+// =========================================================================
 
-// Начало работы
-var pageActive = function () {
+// Функции для обработки событий
+// Начало работы - нажатие на центральный маркер
+var onPageStartMouseUp = function () {
   // Активируем страницу - убираем затемнение
   mapStart.classList.remove('map--faded');
   // Добавляем маркеры на страницу
@@ -169,9 +187,28 @@ var pageActive = function () {
   formNotice.classList.remove('notice__form--disabled');
 };
 
+// Сброс активного маркера
+var pinDeactivate = function () {
+  if (currentPin !== false) {
+    currentPin.classList.remove('map__pin--active');
+  }
+};
+
 // Реакция на нажатие ESC
 var onPopupEscPress = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
+  if (evt.keyCode === keyCodes.ESC) {
+    closePopup();
+  }
+};
+
+// Закрыть карточку мышкой
+var onCardCloseClick = function () {
+  closePopup();
+};
+
+// Закрыть карточку с клавиатуры
+var onCardCloseEnterPress = function (evt) {
+  if (evt.keyCode === keyCodes.ENTER) {
     closePopup();
   }
 };
@@ -185,60 +222,172 @@ var openPopup = function () {
 // Закрыть карточку
 var closePopup = function () {
   mapCard.classList.add('hidden');
-  if (currentPin !== false) {
-    currentPin.classList.remove('map__pin--active');
-    currentPin = false;
-  }
+  pinDeactivate();
+  currentPin = false;
   document.removeEventListener('keydown', onPopupEscPress);
 };
 
-// Инициализация
-// Создаем и заполняем данными массив объектов недвижимости
-ads = generateAds(MAX_PINS);
-// Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
-ads.forEach(renderMapPin);
-// Заполняем фрагмент данными из массива объектов для отрисовки карточки
-fragmentCard.appendChild(renderMapCard(ads[0]));
-// Добавляем карточку недвижимости на страницу и скрываем ее
-mapStart.appendChild(fragmentCard);
-mapCard.classList.add('hidden');
-
-// Обработка событий
-
-// Делаем страницу доступной для работы пользователя
-pinMain.addEventListener('mouseup', function () {
-  pageActive();
-});
-
-// Клик на маркер ловим на контейнере, target - img внутри кнопки
-pinsContainer.addEventListener('click', function (evt) {
-  var target = evt.target;
-  while (target !== pinsContainer) {
-    if (target.tagName === 'BUTTON') {
-      if (currentPin !== false) {
-        currentPin.classList.remove('map__pin--active');
-      }
-      target.classList.add('map__pin--active');
-      currentPin = target;
-      if (!target.classList.contains('map__pin--main')) {
+var onPinClick = function (evt) {
+  var clickedElement = evt.target;
+  while (clickedElement !== pinsContainer) {
+    if (clickedElement.tagName === 'BUTTON') {
+      pinDeactivate();
+      clickedElement.classList.add('map__pin--active');
+      currentPin = clickedElement;
+      if (!clickedElement.classList.contains('map__pin--main')) {
         // Заполняем DOM-ноду карточки данными из массива объектов
-        renderMapCard(ads[target.dataset.numPin]);
+        renderMapCard(ads[clickedElement.dataset.numPin]);
         openPopup();
       }
       return;
     }
-    target = target.parentNode;
+    clickedElement = clickedElement.parentNode;
   }
-});
+};
 
+// Обработка событий
+// Делаем страницу доступной для работы пользователя
+pinMain.addEventListener('mouseup', onPageStartMouseUp);
+// Клик на маркер ловим на контейнере
+pinsContainer.addEventListener('click', onPinClick);
 // Закрытие карточки по нажатию мышки
-mapCardClose.addEventListener('click', function () {
-  closePopup();
-});
-
+mapCardClose.addEventListener('click', onCardCloseClick);
 // Закрытие карточки с клавиатуры
-mapCardClose.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    closePopup();
+mapCardClose.addEventListener('keydown', onCardCloseEnterPress);
+
+// =====================================================================
+// Валидациия формы
+// =====================================================================
+// Переменные
+var titleHousing = formNotice.querySelector('#title');
+var addressHousing = formNotice.querySelector('#address');
+var typeHousing = formNotice.querySelector('#type');
+var priceHousing = formNotice.querySelector('#price');
+var timeInHousing = formNotice.querySelector('#timein');
+var timeOutHousing = formNotice.querySelector('#timeout');
+var roomNamberHousing = formNotice.querySelector('#room_number');
+var capacityHousing = formNotice.querySelector('#capacity');
+
+// Функции для обработчиков событий
+// Выделение красным цветом рамки поля при ошибочном вводе
+var allocateBorderColor = function (elem) {
+  elem.style.borderWidth = '2px';
+  elem.style.borderColor = 'red';
+};
+// Возвращение рамки в прежнее состояние
+var resetBorderColor = function (elem) {
+  elem.style.borderWidth = '';
+  elem.style.borderColor = '';
+};
+
+// для заголовка
+var onInvalidInput = function () {
+  allocateBorderColor(titleHousing);
+  if (titleHousing.validity.tooShort) {
+    titleHousing.setCustomValidity('Заголовок должен быть не менее 30-ти символов');
+  } else if (titleHousing.validity.tooLong) {
+    titleHousing.setCustomValidity('Заголовок не должен превышать длинну в 100 символов');
+  } else if (titleHousing.validity.valueMissing) {
+    titleHousing.setCustomValidity('Обязательное поле');
+  } else {
+    titleHousing.setCustomValidity('');
+    resetBorderColor(titleHousing);
   }
-});
+};
+var onBlurInput = function (evt) {
+  evt.target.checkValidity();
+};
+
+var onFocusInput = function (evt) {
+  resetBorderColor(evt.target);
+};
+
+// Автоввод времени выезда при изменении времени въезда
+var onChangeTimeIn = function () {
+  timeOutHousing.selectedIndex = timeInHousing.selectedIndex;
+};
+// Автоввод времени въезда при изменении времени выезда
+var onChangeTimeOut = function () {
+  timeInHousing.value = timeOutHousing.value;
+};
+
+// Изменение минимальной стоимости жилья
+var onChangeType = function () {
+  priceHousing.min = offerTypePrice[typeHousing.value];
+};
+
+// Проверка введенной суммы на валидность
+var onInvalidInputPrice = function () {
+  allocateBorderColor(priceHousing);
+  if (priceHousing.validity.rangeUnderflow) {
+    priceHousing.setCustomValidity('Стоимость жилья ниже рекомендованной');
+  } else if (priceHousing.validity.rangeOverflow) {
+    priceHousing.setCustomValidity('Стоимость жилья слишком высока');
+  } else {
+    priceHousing.setCustomValidity('');
+    resetBorderColor(priceHousing);
+  }
+};
+// Измененная сумма удовлетворяет условиям
+var onChangePrice = function () {
+  resetBorderColor(priceHousing);
+  priceHousing.setCustomValidity('');
+};
+
+var capacityOptionActivate = function (elem) {
+  elem.classList.remove('hidden');
+};
+
+var capacityOptionDeActivate = function (elem) {
+  elem.classList.add('hidden');
+};
+
+// Изменение select количества гостей в зависимости от изменения количества комнат
+var onChangeRoomNumber = function () {
+  var lenCapacitySelectDef = capacityHousing.options.length;
+  var arrCapacitySelect = capacityOfRooms[roomNamberHousing.value];
+  var lenCapacitySelect = arrCapacitySelect.length;
+  [].forEach.call(capacityHousing.options, capacityOptionActivate);
+  for (var i = 0; i < lenCapacitySelectDef; i++) {
+    var search = false;
+    for (var j = 0; j < lenCapacitySelect; j++) {
+      if (arrCapacitySelect[j] === parseInt(capacityHousing.options[i].value, 10)) {
+        search = true;
+        break;
+      }
+    }
+    if (!search) {
+      capacityOptionDeActivate(capacityHousing.options[i]);
+    }
+  }
+  capacityHousing.value = arrCapacitySelect[0];
+};
+
+// Обработчики событий
+// проверка ввода заголовка
+titleHousing.addEventListener('invalid', onInvalidInput);
+titleHousing.addEventListener('blur', onBlurInput);
+titleHousing.addEventListener('focus', onFocusInput);
+// Событие изменения времени въезда
+timeInHousing.addEventListener('change', onChangeTimeIn);
+// Событие изменения времени выезда
+timeOutHousing.addEventListener('change', onChangeTimeOut);
+// Событие изменения типа жилья
+typeHousing.addEventListener('change', onChangeType);
+// Проверка ввода суммы стоимости за ночь
+priceHousing.addEventListener('invalid', onInvalidInputPrice);
+priceHousing.addEventListener('change', onChangePrice);
+// Событие изменения количества комнат
+roomNamberHousing.addEventListener('change', onChangeRoomNumber);
+
+// =========================================================================
+// Инициализация и начало работы
+// =========================================================================
+// Создаем и заполняем данными массив объектов недвижимости
+ads = generateAds(MAX_PINS);
+// Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
+ads.forEach(renderMapPin);
+// Добавляем карточку недвижимости на страницу и скрываем ее
+mapStart.appendChild(mapCard);
+mapCard.classList.add('hidden');
+addressHousing.value = 'Адрес маленькой лачуги на берегу Японского залива';
