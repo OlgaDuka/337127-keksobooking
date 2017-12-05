@@ -7,7 +7,7 @@ window.card = (function () {
 
   // Формирование карточки объекта - заполнение данными из массива объектов
   return {
-    renderMapCard: function (linkCard, objAd) {
+    render: function (linkCard, objAd) {
       var linkCardP = linkCard.querySelectorAll('p');
       var linkCardUl = linkCard.querySelector('.popup__features');
       linkCard.querySelector('img').src = objAd.author.avatar;

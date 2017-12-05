@@ -18,14 +18,14 @@ window.pin = (function () {
 
   // Формирование маркера - заполнение данными из массива объектов
   return {
-    renderMapPin: function (objAd, i) {
-      var mapPinElement = mapPinTemplate.cloneNode(true);
-      mapPinElement.querySelector('img').src = objAd.author.avatar;
-      mapPinElement.style.left = pinStrX(objAd.location.x);
-      mapPinElement.style.top = pinStrY(objAd.location.y);
-      mapPinElement.dataset.numPin = i;
-      window.data.fragmentPins.appendChild(mapPinElement);
-      return mapPinElement;
+    render: function (objAd, i) {
+      var mapPin = mapPinTemplate.cloneNode(true);
+      mapPin.querySelector('img').src = objAd.author.avatar;
+      mapPin.style.left = pinStrX(objAd.location.x);
+      mapPin.style.top = pinStrY(objAd.location.y);
+      mapPin.dataset.numPin = i;
+      window.data.fragmentPins.appendChild(mapPin);
+      return mapPin;
     }
   };
 })();

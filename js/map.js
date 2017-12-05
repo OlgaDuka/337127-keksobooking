@@ -83,7 +83,7 @@ window.map = (function () {
         currentPin = clickedElement;
         if (!clickedElement.classList.contains('map__pin--main')) {
           // Заполняем DOM-ноду карточки данными из массива объектов
-          window.card.renderMapCard(mapCard, ads[clickedElement.dataset.numPin]);
+          window.card.render(mapCard, ads[clickedElement.dataset.numPin]);
           openPopup();
         }
         return;
@@ -110,7 +110,7 @@ window.map = (function () {
   // Создаем и заполняем данными массив объектов недвижимости
   ads = window.data.generateAds(ads, MAX_PINS);
   // Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
-  ads.forEach(window.pin.renderMapPin);
+  ads.forEach(window.pin.render);
   // Добавляем карточку недвижимости на страницу и скрываем ее
   mapStart.appendChild(mapCard);
   mapCard.classList.add('hidden');
