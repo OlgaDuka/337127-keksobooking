@@ -74,6 +74,7 @@
     currentPin = false;
     document.removeEventListener('keydown', onPopupEscPress);
   };
+  // Клик по маркеру
   var onPinClick = function (evt) {
     var clickedElement = evt.target;
     while (clickedElement !== pinsContainer) {
@@ -91,9 +92,41 @@
       clickedElement = clickedElement.parentNode;
     }
   };
+  // Перетаскиваем центральный маркер
+  var onPinMainMousedown = function (evt) {
+    evt.preventDefault();
+    // Начальные координаты
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+    // Отслеживаем перемещение мыши
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+      pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
+      pinMain.style.left = (pinMain.offsetLeft - shift.x) + 'px';
+    };
+    // Убираем слежение за событиями при отпускании мыши
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      window.form.addressHousing.value = (pinMain.style.top) + ', ' + pinMain.style.left;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    // Обработаем события движения и отпускания мыши
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
 
   // Обработчики событий
-
   // Делаем страницу доступной для работы пользователя
   pinMain.addEventListener('mouseup', onPageStartMouseUp);
   // Клик на маркер ловим на контейнере
@@ -102,7 +135,8 @@
   mapCardClose.addEventListener('click', onCardCloseClick);
   // Закрытие карточки с клавиатуры
   mapCardClose.addEventListener('keydown', onCardCloseEnterPress);
-
+  // Перетаскиваем главный маркер
+  pinMain.addEventListener('mousedown', onPinMainMousedown);
 
   // =========================================================================
   // Инициализация и начало работы
