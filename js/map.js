@@ -1,6 +1,12 @@
 'use strict';
 (function () {
   // Константы
+  // Ограничения перемещения маркера по высоте
+  var borderY = {
+    min: 100,
+    max: 500
+  };
+  var hMainPin = 62;
   // Коды для клавиатуры
   var keyCodes = {
     ESC: 27,
@@ -111,13 +117,15 @@
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-      pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
       pinMain.style.left = (pinMain.offsetLeft - shift.x) + 'px';
+      if ((pinMain.offsetTop - shift.y) >= (borderY.min - hMainPin) && (pinMain.offsetTop - shift.y) <= (borderY.max - hMainPin)) {
+        pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
+      }
     };
     // Убираем слежение за событиями при отпускании мыши
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      window.form.addressHousing.value = (pinMain.style.top) + ', ' + pinMain.style.left;
+      window.form.addressHousing.value = pinMain.style.left + ', ' + (parseInt(pinMain.style.top, 10) + hMainPin) + 'px';
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
