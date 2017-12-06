@@ -6,7 +6,7 @@
     min: 100,
     max: 500
   };
-  var hMainPin = 62;
+  var hMainPin = 70;
   // Коды для клавиатуры
   var keyCodes = {
     ESC: 27,
