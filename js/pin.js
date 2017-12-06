@@ -24,8 +24,8 @@ window.pin = (function () {
       mapPin.style.left = pinStrX(objAd.location.x);
       mapPin.style.top = pinStrY(objAd.location.y);
       mapPin.dataset.numPin = i;
-      window.data.fragmentPins.appendChild(mapPin);
-      return mapPin;
+      this.appendChild(mapPin);
+      return this;
     }
   };
 })();

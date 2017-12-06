@@ -16,8 +16,12 @@ window.data = (function () {
   var MAX_GUESTS = 10;
   var MIN_PRICE = 1000;
   var MAX_PRICE = 1000000;
+  // Количество маркеров, одновременно располагаемых на карте
+  var MAX_PINS = 8;
 
   // Переменные:
+  // Массив объектов недвижимости
+  var arrAds = [];
   // Объект с координатами размещения маркеров на карте
   var coords = {
     x: {
@@ -50,8 +54,6 @@ window.data = (function () {
     return newOfferFeatures;
   };
   return {
-    //  Фрагмент документа, который формируется для вставки в документ
-    fragmentPins: document.createDocumentFragment(),
     // Объект соответствия типов недвижимости
     offerType: {
       flat: 'Квартира',
@@ -60,8 +62,8 @@ window.data = (function () {
       palace: 'Дворец'
     },
     // Создание массива объектов недвижимости
-    generateAds: function (arrAds, numberObj) {
-      for (var i = 0; i < numberObj; i++) {
+    generateAds: function () {
+      for (var i = 0; i < MAX_PINS; i++) {
         var locationX = getRandomInt(coords.x.min, coords.x.max);
         var locationY = getRandomInt(coords.y.min, coords.y.max);
         arrAds[i] = {

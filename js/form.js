@@ -145,6 +145,9 @@ window.form = (function () {
   // Событие изменения количества комнат
   roomNamberHousing.addEventListener('change', onChangeRoomNumber);
 
-  return formNotice;
-
+  return {
+    activate: function () {
+      formNotice.classList.remove('notice__form--disabled');
+    }
+  };
 })();

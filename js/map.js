@@ -1,8 +1,6 @@
 'use strict';
-window.map = (function () {
+(function () {
   // Константы
-  // Количество маркеров, одновременно располагаемых на карте
-  var MAX_PINS = 8;
   // Коды для клавиатуры
   var keyCodes = {
     ESC: 27,
@@ -12,8 +10,6 @@ window.map = (function () {
   // Переменные
   // Главная часть страницы документа
   var mapStart = document.querySelector('.map');
-  // Массив объектов недвижимости
-  var ads = [];
   // Маркер в центре карты
   var pinMain = mapStart.querySelector('.map__pin--main');
   // Часть шаблона - карточка объекта недвижимости
@@ -22,8 +18,12 @@ window.map = (function () {
   var mapCardClose = mapCard.querySelector('.popup__close');
   // Оъект DOM, содержащий список маркеров
   var pinsContainer = mapStart.querySelector('.map__pins');
+  //  Фрагмент документа, который формируется для вставки в документ
+  var fragmentPins = document.createDocumentFragment();
   // Текущий маркер
   var currentPin = false;
+  // Массив объектов недвижимости
+  var ads = [];
 
   // =========================================================================
   // События в процессе работы сайта
@@ -36,9 +36,9 @@ window.map = (function () {
     // Активируем страницу - убираем затемнение
     mapStart.classList.remove('map--faded');
     // Добавляем маркеры на страницу
-    pinsContainer.appendChild(window.data.fragmentPins);
+    pinsContainer.appendChild(fragmentPins);
     // Активируем форму
-    window.form.classList.remove('notice__form--disabled');
+    window.form.activate();
   };
   // Сброс активного маркера
   var pinDeactivate = function () {
@@ -108,9 +108,9 @@ window.map = (function () {
   // Инициализация и начало работы
   // =========================================================================
   // Создаем и заполняем данными массив объектов недвижимости
-  ads = window.data.generateAds(ads, MAX_PINS);
+  ads = window.data.generateAds();
   // Переносим данные из массива объектов во фрагмент с маркерами для вставки на страницу
-  ads.forEach(window.pin.render);
+  ads.forEach(window.pin.render, fragmentPins);
   // Добавляем карточку недвижимости на страницу и скрываем ее
   mapStart.appendChild(mapCard);
   mapCard.classList.add('hidden');
