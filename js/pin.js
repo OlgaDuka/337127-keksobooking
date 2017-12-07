@@ -2,7 +2,7 @@
 window.pin = (function () {
   // Константы
   // Размер маркера по Y
-  var PIN_Y = 64;
+  var PIN_Y = 46;
   // Переменные
   // Часть шаблона - маркер на карте Токио
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');

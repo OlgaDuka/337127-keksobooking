@@ -7,9 +7,9 @@ window.pinMain = (function () {
     max: 500
   };
   // Высота главного маркера
-  var H_MAIN_PIN = 65;
+  var HEIGHT_MAIN_PIN = 65;
   // Высота хвостика главного маркера
-  var H_MAIN_TAIL = 22;
+  var HEIGHT_MAIN_TAIL = 22;
 
   // Маркер в центре карты
   var pin = document.querySelector('.map__pin--main');
@@ -17,7 +17,7 @@ window.pinMain = (function () {
   // Функция для определения координат острого кончика маркера
   var getCoords = function (elem) {
     var box = elem.getBoundingClientRect();
-    return (box.left + box.width / 2 + pageXOffset) + 'px, ' + (box.bottom + pageYOffset + H_MAIN_TAIL) + 'px';
+    return Math.round((box.left + box.width / 2 + pageXOffset)) + ', ' + Math.round((box.bottom + pageYOffset + HEIGHT_MAIN_TAIL));
   };
 
   // Обработка событий
@@ -42,7 +42,7 @@ window.pinMain = (function () {
         y: moveEvt.clientY
       };
       pin.style.left = (pin.offsetLeft - shift.x) + 'px';
-      if ((pin.offsetTop - shift.y) >= (borderY.min - (H_MAIN_PIN / 2 + H_MAIN_TAIL)) && (pin.offsetTop - shift.y) <= (borderY.max - (H_MAIN_PIN / 2 + H_MAIN_TAIL))) {
+      if ((pin.offsetTop - shift.y) >= (borderY.min - (HEIGHT_MAIN_PIN / 2 + HEIGHT_MAIN_TAIL)) && (pin.offsetTop - shift.y) <= (borderY.max - (HEIGHT_MAIN_PIN / 2 + HEIGHT_MAIN_TAIL))) {
         pin.style.top = (pin.offsetTop - shift.y) + 'px';
       }
     };
