@@ -146,6 +146,7 @@ window.form = (function () {
   roomNamberHousing.addEventListener('change', onChangeRoomNumber);
 
   return {
+    addressHousing: formNotice.querySelector('#address'),
     activate: function () {
       formNotice.classList.remove('notice__form--disabled');
     }

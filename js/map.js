@@ -12,6 +12,7 @@
   var mapStart = document.querySelector('.map');
   // Маркер в центре карты
   var pinMain = mapStart.querySelector('.map__pin--main');
+
   // Часть шаблона - карточка объекта недвижимости
   var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
   var mapCard = mapCardTemplate.cloneNode(true);
@@ -39,6 +40,7 @@
     pinsContainer.appendChild(fragmentPins);
     // Активируем форму
     window.form.activate();
+    window.form.addressHousing.value = window.pinMain.address;
   };
   // Сброс активного маркера
   var pinDeactivate = function () {
@@ -74,6 +76,7 @@
     currentPin = false;
     document.removeEventListener('keydown', onPopupEscPress);
   };
+  // Клик по маркеру
   var onPinClick = function (evt) {
     var clickedElement = evt.target;
     while (clickedElement !== pinsContainer) {
@@ -93,7 +96,6 @@
   };
 
   // Обработчики событий
-
   // Делаем страницу доступной для работы пользователя
   pinMain.addEventListener('mouseup', onPageStartMouseUp);
   // Клик на маркер ловим на контейнере
@@ -102,7 +104,6 @@
   mapCardClose.addEventListener('click', onCardCloseClick);
   // Закрытие карточки с клавиатуры
   mapCardClose.addEventListener('keydown', onCardCloseEnterPress);
-
 
   // =========================================================================
   // Инициализация и начало работы
