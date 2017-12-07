@@ -13,11 +13,13 @@ window.pinMain = (function () {
 
   // Маркер в центре карты
   var pin = document.querySelector('.map__pin--main');
+  var pinsoverlay = document.querySelector('.map__pinsoverlay');
 
   // Функция для определения координат острого кончика маркера
-  var getCoords = function (elem) {
+  var getCoords = function (elem, container) {
     var box = elem.getBoundingClientRect();
-    return Math.round((box.left + box.width / 2 + pageXOffset)) + ', ' + Math.round((box.bottom + pageYOffset + HEIGHT_MAIN_TAIL));
+    var boxOverlay = container.getBoundingClientRect();
+    return Math.round((box.left - boxOverlay.left + box.width / 2)) + ', ' + Math.round((box.bottom + pageYOffset + HEIGHT_MAIN_TAIL));
   };
 
   // Обработка событий
@@ -50,7 +52,7 @@ window.pinMain = (function () {
     // и записываем координаты маркера в поле адреса формы
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      window.form.addressHousing.value = getCoords(pin);
+      window.form.addressHousing.value = getCoords(pin, pinsoverlay);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -62,7 +64,7 @@ window.pinMain = (function () {
   pin.addEventListener('mousedown', onPinMainMousedown);
 
   return {
-    address: getCoords(pin)
+    address: getCoords(pin, pinsoverlay)
   };
 
 })();
