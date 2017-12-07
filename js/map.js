@@ -31,6 +31,12 @@
   // Массив объектов недвижимости
   var ads = [];
 
+  // Функция для определения координат элемента
+  var getCoords = function (elem) {
+    var box = elem.getBoundingClientRect();
+    return (box.left + pageXOffset) + 'px, ' + (box.top + pageYOffset) + 'px';
+  };
+
   // =========================================================================
   // События в процессе работы сайта
   // =========================================================================
@@ -45,6 +51,7 @@
     pinsContainer.appendChild(fragmentPins);
     // Активируем форму
     window.form.activate();
+    window.form.addressHousing.value = getCoords(pinMain);
   };
   // Сброс активного маркера
   var pinDeactivate = function () {
@@ -107,6 +114,7 @@
       y: evt.clientY
     };
     // Отслеживаем перемещение мыши
+    document.addEventListener('moveEvt', onMouseMove);
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
       var shift = {
@@ -123,9 +131,12 @@
       }
     };
     // Убираем слежение за событиями при отпускании мыши
+    // и записываем координаты маркера в поле адреса формы
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      window.form.addressHousing.value = pinMain.style.left + ', ' + (parseInt(pinMain.style.top, 10) + hMainPin) + 'px';
+      if (pinMain.style.left) {
+        window.form.addressHousing.value = pinMain.style.left + ', ' + (parseInt(pinMain.style.top, 10) + hMainPin) + 'px';
+      }
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
