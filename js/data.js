@@ -35,6 +35,20 @@ window.data = (function () {
   };
   // Копия массива названий объектов недвижимости
   var offerTitles = OFFER_TITLES.slice();
+  // Объект соответствия типов недвижимости
+  var offerType = {
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало',
+    palace: 'Дворец'
+  };
+  // Объект соответствия типов недвижимости и минимальной цены
+  var offerTypePrice = {
+    flat: 1000,
+    bungalo: 0,
+    house: 5000,
+    palace: 10000
+  };
 
   // Функции:
   // Получение случайного целого значения, включая minValue и исключая maxValue
@@ -53,14 +67,16 @@ window.data = (function () {
     }
     return newOfferFeatures;
   };
+
   return {
-    // Объект соответствия типов недвижимости
-    offerType: {
-      flat: 'Квартира',
-      house: 'Дом',
-      bungalo: 'Бунгало',
-      palace: 'Дворец'
-    },
+    arrOfferTypes: OFFER_TYPES.slice(),
+    arrTypes: OFFER_TYPES.map(function (elem) {
+      return offerType[elem];
+    }),
+    arrPrices: OFFER_TYPES.map(function (elem) {
+      return offerTypePrice[elem];
+    }),
+    arrOfferChecks: OFFER_CHECKS.slice(),
     // Создание массива объектов недвижимости
     generateAds: function () {
       for (var i = 0; i < MAX_PINS; i++) {
