@@ -24,5 +24,4 @@ window.card = (function () {
       return linkCard;
     }
   };
-
 })();
