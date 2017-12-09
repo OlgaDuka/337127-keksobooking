@@ -18,19 +18,20 @@ window.form = (function () {
   addressHousing.value = 'Адрес маленькой лачуги на берегу Японского залива';
 
   // Вспомогательные
-  // Объект соответствия типов недвижимости
-  var offerTypePrice = {
-    flat: 1000,
-    bungalo: 0,
-    house: 5000,
-    palace: 10000
-  };
   // Объект соответствия количества комнат количеству возможных гостей
   var capacityOfRooms = {
     1: [1],
     2: [1, 2],
     3: [1, 2, 3],
     100: [0]
+  };
+
+  // Функции обратного вызова для синхронизации значений полей формы
+  var syncValues = function (element, value) {
+    element.value = value;
+  };
+  var syncValueWithMin = function (element, value) {
+    element.min = value;
   };
 
   // Функции для обработчиков событий
@@ -69,16 +70,16 @@ window.form = (function () {
 
   // Автоввод времени выезда при изменении времени въезда
   var onChangeTimeIn = function () {
-    timeOutHousing.selectedIndex = timeInHousing.selectedIndex;
+    window.synchronizeFields(timeInHousing, timeOutHousing, window.data.arrOfferChecks, window.data.arrOfferChecks, syncValues);
   };
   // Автоввод времени въезда при изменении времени выезда
   var onChangeTimeOut = function () {
-    timeInHousing.value = timeOutHousing.value;
+    window.synchronizeFields(timeOutHousing, timeInHousing, window.data.arrOfferChecks, window.data.arrOfferChecks, syncValues);
   };
 
   // Изменение минимальной стоимости жилья
   var onChangeType = function () {
-    priceHousing.min = offerTypePrice[typeHousing.value];
+    window.synchronizeFields(typeHousing, priceHousing, window.data.arrOfferTypes, window.data.arrPrices, syncValueWithMin);
   };
 
   // Проверка введенной суммы на валидность
