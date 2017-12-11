@@ -1,6 +1,8 @@
 'use strict';
 window.pinMain = (function () {
+  // =========================================================================
   // Константы
+  // =========================================================================
   // Ограничения перемещения маркера по высоте
   var borderY = {
     min: 100,
@@ -10,19 +12,25 @@ window.pinMain = (function () {
   var HEIGHT_MAIN_PIN = 65;
   // Высота хвостика главного маркера
   var HEIGHT_MAIN_TAIL = 22;
-
+  // =========================================================================
+  // Переменные
+  // =========================================================================
   // Маркер в центре карты
   var pin = document.querySelector('.map__pin--main');
+  // Контейнер, скрывающий карту
   var pinsoverlay = document.querySelector('.map__pinsoverlay');
-
+  // =========================================================================
+  // Функции
+  // =========================================================================
   // Функция для определения координат острого кончика маркера
   var getCoords = function (elem, container) {
     var box = elem.getBoundingClientRect();
     var boxOverlay = container.getBoundingClientRect();
     return Math.round((box.left - boxOverlay.left + box.width / 2)) + ', ' + Math.round((box.bottom + pageYOffset + HEIGHT_MAIN_TAIL));
   };
-
+  // ==========================================================================
   // Обработка событий
+  // ==========================================================================
   // Перетаскиваем центральный маркер
   var onPinMainMousedown = function (evt) {
     evt.preventDefault();
@@ -63,6 +71,7 @@ window.pinMain = (function () {
   // Перетаскиваем главный маркер
   pin.addEventListener('mousedown', onPinMainMousedown);
 
+  // Экспортируем строку с координатами для ввода адреса в форму
   return {
     address: getCoords(pin, pinsoverlay)
   };

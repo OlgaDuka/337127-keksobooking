@@ -1,20 +1,25 @@
 'use strict';
 window.showCard = (function () {
+  // =========================================================================
   // Константы
+  // =========================================================================
   // Коды для клавиатуры
   var keyCodes = {
     ESC: 27,
     ENTER: 13
   };
+  // =========================================================================
   // Переменные
+  // =========================================================================
   // Часть шаблона - карточка объекта недвижимости
   var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
   var mapCard = mapCardTemplate.cloneNode(true);
   var mapCardClose = mapCard.querySelector('.popup__close');
   // Текущий маркер
   var currentPin = false;
-
+  // =========================================================================
   // Функции для обработки событий
+  // =========================================================================
   // Сброс активного маркера
   var pinDeactivate = function () {
     if (currentPin !== false) {
@@ -49,15 +54,16 @@ window.showCard = (function () {
     currentPin = false;
     document.removeEventListener('keydown', onPopupEscPress);
   };
-
+  // =========================================================================
   // Обработчики событий
+  // =========================================================================
   // Закрытие карточки по нажатию мышки
   mapCardClose.addEventListener('click', onCardCloseClick);
   // Закрытие карточки с клавиатуры
   mapCardClose.addEventListener('keydown', onCardCloseEnterPress);
 
+  // Экспортируем функцию рисования и показа карточки
   return {
-    // Заполняем и открываем карточку
     renderAndOpen: function (elem, arrAds, pins) {
       var clickedElement = elem;
       while (clickedElement !== pins) {
@@ -66,7 +72,6 @@ window.showCard = (function () {
           clickedElement.classList.add('map__pin--active');
           currentPin = clickedElement;
           if (!clickedElement.classList.contains('map__pin--main')) {
-            // Заполняем DOM-ноду карточки данными из массива объектов
             window.card.render(mapCard, arrAds[clickedElement.dataset.numPin]);
             openPopup();
           } else {

@@ -5,7 +5,7 @@ window.card = (function () {
     return '<li class="feature feature--' + elem + '"></li>';
   };
 
-  // Формирование карточки объекта - заполнение данными из массива объектов
+  // Экспортируем функцию формирования карточки объекта недвижимости
   return {
     render: function (linkCard, objAd) {
       var linkCardP = linkCard.querySelectorAll('p');
