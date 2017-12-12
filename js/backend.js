@@ -43,6 +43,17 @@ window.backend = (function () {
       var xhr = createRequest(onSuccess, onError);
       xhr.open('POST', URL);
       xhr.send(data);
+    },
+    // Ошибка - выводим сообщение для пользователя
+    errorHandler: function (errorMessage) {
+      var node = document.createElement('div');
+      node.style = 'z-index: 100; margin: 5px auto; text-align: center; background-color: magenta; border: 2px solid black';
+      node.style.position = 'absolute';
+      node.style.left = 0;
+      node.style.right = 0;
+      node.style.fontSize = '30px';
+      node.textContent = errorMessage;
+      document.body.insertAdjacentElement('afterbegin', node);
     }
   };
 })();

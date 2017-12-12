@@ -25,6 +25,10 @@ window.form = (function () {
     3: [1, 2, 3],
     100: [0]
   };
+  // Функция сброса полей формы в начальное состояние
+  var resetForm = function () {
+    titleHousing.value = 'Милая, но очень уютная квартирка в центре Токио';
+  };
 
   // Функции обратного вызова для синхронизации значений полей формы
   var syncValues = function (element, value) {
@@ -128,6 +132,11 @@ window.form = (function () {
     }
     capacityHousing.value = arrCapacitySelect[0];
   };
+  // Отправка формы на сервер
+  var onSubmitForm = function (evt) {
+    window.backend.save(new FormData(formNotice), resetForm, window.backend.errorHandler);
+    evt.preventDefault();
+  };
 
   // Обработчики событий
   // проверка ввода заголовка
@@ -145,6 +154,8 @@ window.form = (function () {
   priceHousing.addEventListener('change', onChangePrice);
   // Событие изменения количества комнат
   roomNamberHousing.addEventListener('change', onChangeRoomNumber);
+  // Событие отправки формы на сервер
+  formNotice.addEventListener('submit', onSubmitForm);
 
   return {
     addressHousing: formNotice.querySelector('#address'),

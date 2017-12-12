@@ -31,7 +31,7 @@
     window.showCard.renderAndOpen(evt.target, ads, pinsContainer);
   };
   // =========================================================================
-  // Функции для обмена данными с сервером
+  // Функция обратного вызова для обмена данными с сервером
   // =========================================================================
   // Данные успешно загружены
   var successHandler = function (arrData) {
@@ -40,22 +40,11 @@
     // Делаем страницу доступной для работы пользователя
     pinMain.addEventListener('mouseup', onPageStartMouseUp);
   };
-  // Ошибка - выводим сообщение для пользователя
-  var errorHandler = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 5px auto; text-align: center; background-color: magenta; border: 2px solid black';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '30px';
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
-  };
   // =========================================================================
   // Инициализация и начало работы
   // =========================================================================
   // Загружаем данные с сервера
-  window.backend.load(successHandler, errorHandler);
+  window.backend.load(successHandler, window.backend.errorHandler);
   // Добавляем карточку недвижимости на страницу и скрываем ее
   mapStart.appendChild(window.showCard.renderAndOpen(pinMain, ads[0], pinsContainer));
   // Клик на маркер ловим на контейнере
