@@ -1,5 +1,13 @@
 'use strict';
 window.card = (function () {
+  // Переменные
+  var offerType = {
+    flat: 'Квартира',
+    bungalo: 'Лачуга',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+  // Функции
   // Подготовка строки для вставки списка удобств
   var getStringFeatures = function (elem) {
     return '<li class="feature feature--' + elem + '"></li>';
@@ -19,7 +27,7 @@ window.card = (function () {
       linkCard.querySelector('h3').textContent = objAd.offer.title;
       linkCard.querySelector('.popup__price').innerHTML = objAd.offer.price + '&#x20bd;/ночь';
       linkCard.querySelector('small').textContent = objAd.offer.address;
-      linkCard.querySelector('h4').textContent = window.data.arrTypes[objAd.offer.type];
+      linkCard.querySelector('h4').textContent = offerType[objAd.offer.type];
       linkCardP[2].textContent = objAd.offer.rooms + ' комнаты для ' + objAd.offer.guests + ' гостей';
       linkCardP[3].textContent = 'Заезд после ' + objAd.offer.checkin + ', выезд до ' + objAd.offer.checkout;
       linkCardP[4].textContent = objAd.offer.description;

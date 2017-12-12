@@ -1,8 +1,8 @@
 'use strict';
 window.form = (function () {
-  // =====================================================================
-  // Валидациия формы
-  // =====================================================================
+  // Константы
+  var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
+  var OFFER_CHECKS = ['12:00', '13:00', '14:00'];
   // Переменные
   // Форма
   var formNotice = document.querySelector('.notice__form');
@@ -14,8 +14,6 @@ window.form = (function () {
   var roomNamberHousing = formNotice.querySelector('#room_number');
   var capacityHousing = formNotice.querySelector('#capacity');
   var addressHousing = formNotice.querySelector('#address');
-  // Временное заполнение поля
-  addressHousing.value = 'Адрес маленькой лачуги на берегу Японского залива';
 
   // Вспомогательные
   // Объект соответствия количества комнат количеству возможных гостей
@@ -25,9 +23,27 @@ window.form = (function () {
     3: [1, 2, 3],
     100: [0]
   };
+  // Объект соответствия типов недвижимости и минимальной цены
+  var offerTypePrice = {
+    flat: 1000,
+    bungalo: 0,
+    house: 5000,
+    palace: 10000
+  };
+  var arrPrices = OFFER_TYPES.map(function (elem) {
+    return offerTypePrice[elem];
+  });
+
   // Функция сброса полей формы в начальное состояние
   var resetForm = function () {
     titleHousing.value = 'Милая, но очень уютная квартирка в центре Токио';
+    addressHousing.value = window.pinMain.address;
+    typeHousing.value = 'flat';
+    priceHousing.value = '5000';
+    timeInHousing.value = '12:00';
+    timeOutHousing.value = '12:00';
+    roomNamberHousing.value = '1';
+    capacityHousing.value = '1';
   };
 
   // Функции обратного вызова для синхронизации значений полей формы
@@ -74,16 +90,16 @@ window.form = (function () {
 
   // Автоввод времени выезда при изменении времени въезда
   var onChangeTimeIn = function () {
-    window.synchronizeFields(timeInHousing, timeOutHousing, window.data.arrOfferChecks, window.data.arrOfferChecks, syncValues);
+    window.synchronizeFields(timeInHousing, timeOutHousing, OFFER_CHECKS, OFFER_CHECKS, syncValues);
   };
   // Автоввод времени въезда при изменении времени выезда
   var onChangeTimeOut = function () {
-    window.synchronizeFields(timeOutHousing, timeInHousing, window.data.arrOfferChecks, window.data.arrOfferChecks, syncValues);
+    window.synchronizeFields(timeOutHousing, timeInHousing, OFFER_CHECKS, OFFER_CHECKS, syncValues);
   };
 
   // Изменение минимальной стоимости жилья
   var onChangeType = function () {
-    window.synchronizeFields(typeHousing, priceHousing, window.data.arrOfferTypes, window.data.arrPrices, syncValueWithMin);
+    window.synchronizeFields(typeHousing, priceHousing, OFFER_TYPES, arrPrices, syncValueWithMin);
   };
 
   // Проверка введенной суммы на валидность
