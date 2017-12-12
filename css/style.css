@@ -445,11 +445,18 @@ textarea:focus
     margin-bottom: .3em;
 }
 
+.popup__pictures {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
 .popup__pictures li
 {
-    display: inline-block;
+    display: block;
+}
 
-    vertical-align: middle;
+.popup__pictures li img {
+  width: 20%;
 }
 
 .popup__avatar

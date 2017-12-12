@@ -3,9 +3,9 @@ window.backend = (function () {
   // Константы
   var TIME_OUT = 10000;
   var CODE_SUCSESS = 200;
-  var ERROR_MESSAGE = {
-    mes1: 'Произошла ошибка соединения',
-    mes2: 'Запрос не успел выполниться за '
+  var MESSAGES = {
+    errorNet: 'Произошла ошибка соединения',
+    errorTime: 'Запрос не успел выполниться за '
   };
   var URL = 'https://1510.dump.academy/keksobooking';
 
@@ -23,11 +23,11 @@ window.backend = (function () {
     });
     // Обработка ошибки во время загрузки
     xhr.addEventListener('error', function () {
-      onError(ERROR_MESSAGE.mes1);
+      onError(MESSAGES.errorNet);
     });
     // Обработка слишком долгого ожидания загрузки
     xhr.addEventListener('timeout', function () {
-      onError(ERROR_MESSAGE.mes2 + xhr.timeout + 'мс');
+      onError(MESSAGES.errorTime + xhr.timeout + 'мс');
     });
     xhr.timeout = TIME_OUT;
     return xhr;
