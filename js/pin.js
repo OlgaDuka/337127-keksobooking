@@ -16,7 +16,7 @@ window.pin = (function () {
     return (y - PIN_Y) + 'px';
   };
 
-  // Формирование маркера - заполнение данными из массива объектов
+  // Экспортируем функцию формирования маркера
   return {
     render: function (objAd, i) {
       var mapPin = mapPinTemplate.cloneNode(true);
