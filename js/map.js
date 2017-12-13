@@ -35,8 +35,8 @@
   // =========================================================================
   // Данные успешно загружены
   var successHandler = function (arrData) {
-    arrData.forEach(window.pin.render, fragmentPins);
-    ads = arrData.slice();
+    ads = window.mapFilters.sample(arrData);
+    ads.forEach(window.pin.render, fragmentPins);
     // Делаем страницу доступной для работы пользователя
     pinMain.addEventListener('mouseup', onPageStartMouseUp);
   };
