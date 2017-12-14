@@ -3,6 +3,7 @@ window.mapFilters = (function () {
   // Константы
   var SHOW_PIN = 5;
   // Переменные
+  var arrDataTemp = [];
   var objValue = {
     typeValue: 'any',
     priceValue: 'any',
@@ -14,13 +15,16 @@ window.mapFilters = (function () {
   var filterPrice = filterForm.querySelector('#housing-price');
   var filterRooms = filterForm.querySelector('#housing-rooms');
   var filterGuests = filterForm.querySelector('#housing-guests');
+  var pinsContainer = document.querySelector('.map__pins');
   // var filterFeatures = filterForm.querySelector('.housing-features');
+
   // Функция получения отфильтрованного массива данных
   var updateArrData = function (arr) {
+    var fragment = document.createDocumentFragment();
     var arrFiltered = arr;
     if (objValue.typeValue !== 'any') {
       arrFiltered = arrFiltered.filter(function (elem) {
-        return elem.value === objValue.typeValue;
+        return elem.offer.type === objValue.typeValue;
       });
     }
     switch (objValue.priceValue) {
@@ -28,47 +32,54 @@ window.mapFilters = (function () {
         break;
       case 'low':
         arrFiltered = arrFiltered.filter(function (elem) {
-          return elem.value <= 10000;
+          return elem.offer.price <= 10000;
         });
         break;
       case 'high':
         arrFiltered = arrFiltered.filter(function (elem) {
-          return elem.value >= 50000;
+          return elem.offer.price >= 50000;
         });
         break;
       case 'middle':
         arrFiltered = arrFiltered.filter(function (elem) {
-          return (elem.value > 10000) && (elem.value < 50000);
+          return (elem.offer.price > 10000) && (elem.offer.price < 50000);
         });
     }
     if (objValue.roomsValue !== 'any') {
       arrFiltered = arrFiltered.filter(function (elem) {
-        return elem.value === objValue.roomsValue;
+        return elem.offer.rooms === parseInt(objValue.roomsValue, 10);
       });
     }
     if (objValue.guestsValue !== 'any') {
       arrFiltered = arrFiltered.filter(function (elem) {
-        return elem.value === objValue.guestsValue;
+        return elem.offer.guests === parseInt(objValue.guestsValue, 10);
       });
     }
-    return arrFiltered.slice(0, SHOW_PIN);
+    if (arrFiltered.length > SHOW_PIN) {
+      arrFiltered = arrFiltered.slice(0, SHOW_PIN);
+    }
+    // Формируем маркеры для отфильтрованного списка
+    arrFiltered.forEach(window.pin.render, fragment);
+    // Добавляем маркеры на страницу
+    pinsContainer.innerHTML = '';
+    pinsContainer.appendChild(fragment);
   };
   // Функции для обработки событий
   var onFilterTypeChange = function (evt) {
     objValue.typeValue = evt.target.value;
-  //  updateArrData();
+    updateArrData(arrDataTemp);
   };
   var onFilterPriceChange = function (evt) {
     objValue.priceValue = evt.target.value;
-  //  updateArrData();
+    updateArrData(arrDataTemp);
   };
   var onFilterRoomsChange = function (evt) {
     objValue.roomsValue = evt.target.value;
-  //  updateArrData();
+    updateArrData(arrDataTemp);
   };
   var onFilterGuestsChange = function (evt) {
     objValue.guestsValue = evt.target.value;
-  //  updateArrData();
+    updateArrData(arrDataTemp);
   };
   // Обработчики событий изменения селектов
   filterType.addEventListener('change', onFilterTypeChange);
@@ -78,7 +89,8 @@ window.mapFilters = (function () {
   // Экспортируем функцию получения отфильтрованного массива данных
   return {
     sample: function (arr) {
-      return updateArrData(arr);
+      arrDataTemp = arr.slice();
+      return arrDataTemp.slice(0, SHOW_PIN);
     }
   };
 })();
