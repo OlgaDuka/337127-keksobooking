@@ -81,20 +81,18 @@ window.mapFilters = (function () {
     }
     return arr;
   };
+  // Поиск удобства в объекте недвижимости
+  var findFeature = function (arrFeatures, val) {
+    return arrFeatures.some(function (arrVal) {
+      return val === arrVal;
+    });
+  };
   // Фильтр по удобствам
   var filterFeaturesHousing = function (arr) {
-    var filterSet = false;
     for (var key in objChecked) {
       if (objChecked[key]) {
         arr = arr.filter(function (elem) {
-          filterSet = false;
-          for (var i = 0; i < elem.offer.features.length; i++) {
-            if (elem.offer.features[i] === key) {
-              filterSet = true;
-              break;
-            }
-          }
-          return filterSet;
+          return findFeature(elem.offer.features, key);
         });
       }
     }

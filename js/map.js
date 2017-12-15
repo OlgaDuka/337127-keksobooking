@@ -51,7 +51,7 @@
     // Очищаем контейнер с пинами от предыдущего результата
     clearPinsContainer();
     // Добавляем маркеры на страницу
-    pinsContainer.appendChild(fragmentPins);
+    window.debounce(pinsContainer.appendChild(fragmentPins));
   };
 
   // =========================================================================
