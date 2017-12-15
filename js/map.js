@@ -11,8 +11,21 @@
   var pinsContainer = mapStart.querySelector('.map__pins');
   //  Фрагмент документа, который формируется для вставки в документ
   var fragmentPins = document.createDocumentFragment();
+  //
+  var filterHousing = document.querySelector('.map__filters');
   // Массив объектов недвижимости
   var ads = [];
+  var arrDataTemp = [];
+  // =========================================================================
+  // Функции
+  // =========================================================================
+  // Функция очистки контейнера с маркерами
+  var clearPinsContainer = function () {
+    while (pinsContainer.childElementCount > 2) {
+      pinsContainer.removeChild(pinsContainer.lastChild);
+    }
+  };
+
   // =========================================================================
   // Функции для обработки событий
   // =========================================================================
@@ -30,11 +43,23 @@
   var onPinClick = function (evt) {
     window.showCard.renderAndOpen(evt.target, ads, pinsContainer);
   };
+  // Событие изменения фильтра
+  var onFilterHousingClick = function () {
+    ads = window.mapFilters.updateData(arrDataTemp);
+    // Формируем маркеры для отфильтрованного списка
+    ads.forEach(window.pin.render, fragmentPins);
+    // Очищаем контейнер с пинами от предыдущего результата
+    clearPinsContainer();
+    // Добавляем маркеры на страницу
+    pinsContainer.appendChild(fragmentPins);
+  };
+
   // =========================================================================
   // Функция обратного вызова для обмена данными с сервером
   // =========================================================================
   // Данные успешно загружены
   var successHandler = function (arrData) {
+    arrDataTemp = arrData.slice();
     ads = window.mapFilters.sample(arrData);
     ads.forEach(window.pin.render, fragmentPins);
     // Делаем страницу доступной для работы пользователя
@@ -49,4 +74,6 @@
   mapStart.appendChild(window.showCard.renderAndOpen(pinMain, ads[0], pinsContainer));
   // Клик на маркер ловим на контейнере
   pinsContainer.addEventListener('click', onPinClick);
+  // Клик на фильтрах ловим на форме с фильтрами
+  filterHousing.addEventListener('click', onFilterHousingClick);
 })();

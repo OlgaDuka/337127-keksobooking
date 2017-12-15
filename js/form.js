@@ -13,6 +13,7 @@ window.form = (function () {
   var timeOutHousing = formNotice.querySelector('#timeout');
   var roomNamberHousing = formNotice.querySelector('#room_number');
   var capacityHousing = formNotice.querySelector('#capacity');
+  var featuresHousing = formNotice.querySelectorAll('input[type="checkbox"]');
   var addressHousing = formNotice.querySelector('#address');
 
   // Вспомогательные
@@ -44,6 +45,9 @@ window.form = (function () {
     timeOutHousing.value = '12:00';
     roomNamberHousing.value = '1';
     capacityHousing.value = '1';
+    for (var i = 0; i < featuresHousing.length; i++) {
+      featuresHousing[i].checked = false;
+    }
   };
 
   // Функции обратного вызова для синхронизации значений полей формы
