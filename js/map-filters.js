@@ -1,8 +1,9 @@
 'use strict';
 window.mapFilters = (function () {
-  // Константы
+  // ==========================================================================
+  // Константы и переменные
+  // =========================================================================
   var SHOW_PIN = 5;
-  // Переменные
   var arrDataTemp = [];
   var objValue = {
     typeValue: 'any',
@@ -10,28 +11,16 @@ window.mapFilters = (function () {
     roomsValue: 'any',
     guestsValue: 'any'
   };
-  var objChecked = {
-    wifi: false,
-    dishwasher: false,
-    parking: false,
-    washer: false,
-    elevator: false,
-    conditioner: false
-  };
-
+  var checkedFeatures = [];
   var filterForm = document.querySelector('.map__filters');
   var filterType = filterForm.querySelector('#housing-type');
   var filterPrice = filterForm.querySelector('#housing-price');
   var filterRooms = filterForm.querySelector('#housing-rooms');
   var filterGuests = filterForm.querySelector('#housing-guests');
   var filterFeatures = filterForm.querySelector('#housing-features');
-  var filterWifi = filterFeatures.querySelector('#filter-wifi');
-  var filterDishwasher = filterFeatures.querySelector('#filter-dishwasher');
-  var filterParking = filterFeatures.querySelector('#filter-parking');
-  var filterWasher = filterFeatures.querySelector('#filter-washer');
-  var filterElevator = filterFeatures.querySelector('#filter-elevator');
-  var filterConditioner = filterFeatures.querySelector('#filter-conditioner');
+  // =========================================================================
   // Массив с функциями фильтров
+  // =========================================================================
   var arrFunctionFilters = [
     // Фильтр по типу жилья
     function (arr) {
@@ -84,25 +73,19 @@ window.mapFilters = (function () {
     },
     // Фильтр по удобствам
     function (arr) {
-      for (var key in objChecked) {
-        if (objChecked[key]) {
-          arr = arr.filter(function (elem) {
-            return findFeature(elem.offer.features, key);
-          });
-        }
-      }
-      return arr;
+      return arr.filter(function (elem) {
+        return checkedFeatures.every(function (currentFeature) {
+          return elem.offer.features.includes(currentFeature);
+        });
+      });
     }
   ];
-  // Поиск удобства в объекте недвижимости
-  var findFeature = function (arrFeatures, val) {
-    return arrFeatures.some(function (arrVal) {
-      return val === arrVal;
-    });
-  };
-  // Обновляем контейнер с пинами в соответствии с фильтрами
+  // ==========================================================================
+  // Функция фильтрации
+  // ==========================================================================
   var updatePins = function (arr) {
     var arrFiltered = arr;
+    // Получаем массив данных после обработки системой фильтров
     arrFunctionFilters.forEach(function (elem) {
       arrFiltered = elem(arrFiltered);
     });
@@ -110,12 +93,14 @@ window.mapFilters = (function () {
     if (arrFiltered.length > SHOW_PIN) {
       arrFiltered = arrFiltered.slice(0, SHOW_PIN);
     }
+    // Передаем полученный массив в глобальную область видимости
     window.mapFilters.filteredData = arrFiltered.slice();
-    window.mapFilters.filteredData.forEach(window.pin.render, window.map.fragmentPins);
+    // Добавляем пины на страницу через установленный тайм-аут
     window.debounce(window.map.appendPins);
   };
-
+  // =========================================================================
   // Функции для обработки событий изменения фильтров
+  // =========================================================================
   var onFilterTypeChange = function (evt) {
     objValue.typeValue = evt.target.value;
     updatePins(arrDataTemp);
@@ -133,22 +118,26 @@ window.mapFilters = (function () {
     updatePins(arrDataTemp);
   };
   var onFilterFeaturesChange = function () {
-    objChecked.wifi = filterWifi.checked;
-    objChecked.dishwasher = filterDishwasher.checked;
-    objChecked.parking = filterParking.checked;
-    objChecked.washer = filterWasher.checked;
-    objChecked.elevator = filterElevator.checked;
-    objChecked.conditioner = filterConditioner.checked;
+    // Получаем список отмеченных чекбоксов
+    var checkedElements = filterFeatures.querySelectorAll('input[type="checkbox"]:checked');
+    // Преобразуем список в массив строк
+    checkedFeatures = [].map.call(checkedElements, function (elem) {
+      return elem.value;
+    });
     updatePins(arrDataTemp);
   };
-  // Обработчики событий изменения селектов
+  // ==========================================================================
+  // Обработчики событий изменения фильтров
+  // ==========================================================================
   filterType.addEventListener('change', onFilterTypeChange);
   filterPrice.addEventListener('change', onFilterPriceChange);
   filterRooms.addEventListener('change', onFilterRoomsChange);
   filterGuests.addEventListener('change', onFilterGuestsChange);
   filterFeatures.addEventListener('change', onFilterFeaturesChange);
+  // ==========================================================================
   // Экспортируем функцию, принимающую массив данных с сервера,
   // и отфильтрованный массив данных
+  // ==========================================================================
   return {
     filteredData: [],
     sample: function (arr) {

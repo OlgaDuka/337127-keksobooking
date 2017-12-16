@@ -61,9 +61,13 @@ window.map = (function () {
   return {
     //  Фрагмент документа, который формируется для вставки в документ
     fragmentPins: document.createDocumentFragment(),
-    // Добавляем маркеры на страницу
+    // Функция добавления маркеров на страницу
     appendPins: function () {
+      // Очищаем контейнер
       clearPinsContainer();
+      // Заполняем фрагмент в соответствии с отфильтрованным массивом
+      window.mapFilters.filteredData.forEach(window.pin.render, window.map.fragmentPins);
+      // Добавляем фрагмент на страницу
       pinsContainer.appendChild(window.map.fragmentPins);
     }
   };
