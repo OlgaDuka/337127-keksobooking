@@ -64,7 +64,7 @@ window.showCard = (function () {
 
   // Экспортируем функцию рисования и показа карточки
   return {
-    renderAndOpen: function (elem, arrAds, pins) {
+    renderAndOpen: function (elem, pins) {
       var clickedElement = elem;
       while (clickedElement !== pins) {
         if (clickedElement.tagName === 'BUTTON') {
@@ -72,7 +72,7 @@ window.showCard = (function () {
           clickedElement.classList.add('map__pin--active');
           currentPin = clickedElement;
           if (!clickedElement.classList.contains('map__pin--main')) {
-            window.card.render(mapCard, arrAds[clickedElement.dataset.numPin]);
+            window.card.render(mapCard, window.mapFilters.filteredData[clickedElement.dataset.numPin]);
             openPopup();
           } else {
             mapCard.classList.add('hidden');

@@ -1,5 +1,5 @@
 'use strict';
-(function () {
+window.map = (function () {
   // =========================================================================
   // Переменные
   // =========================================================================
@@ -9,23 +9,17 @@
   var pinMain = mapStart.querySelector('.map__pin--main');
   // Оъект DOM, содержащий список маркеров
   var pinsContainer = mapStart.querySelector('.map__pins');
-  //  Фрагмент документа, который формируется для вставки в документ
-  var fragmentPins = document.createDocumentFragment();
-  //
-  var filterHousing = document.querySelector('.map__filters');
   // Массив объектов недвижимости
   var ads = [];
-  var arrDataTemp = [];
-  // =========================================================================
+  // ========================================================================
   // Функции
-  // =========================================================================
-  // Функция очистки контейнера с маркерами
+  // ========================================================================
+  // Очищаем контейнер с пинами от предыдущего результата
   var clearPinsContainer = function () {
     while (pinsContainer.childElementCount > 2) {
       pinsContainer.removeChild(pinsContainer.lastChild);
     }
   };
-
   // =========================================================================
   // Функции для обработки событий
   // =========================================================================
@@ -34,24 +28,14 @@
     // Активируем страницу - убираем затемнение
     mapStart.classList.remove('map--faded');
     // Добавляем маркеры на страницу
-    pinsContainer.appendChild(fragmentPins);
+    pinsContainer.appendChild(window.map.fragmentPins);
     // Активируем форму
     window.form.activate();
     window.form.addressHousing.value = window.pinMain.address;
   };
   // Клик по маркеру
   var onPinClick = function (evt) {
-    window.showCard.renderAndOpen(evt.target, ads, pinsContainer);
-  };
-  // Событие изменения фильтра
-  var onFilterHousingClick = function () {
-    ads = window.mapFilters.updateData(arrDataTemp);
-    // Формируем маркеры для отфильтрованного списка
-    ads.forEach(window.pin.render, fragmentPins);
-    // Очищаем контейнер с пинами от предыдущего результата
-    clearPinsContainer();
-    // Добавляем маркеры на страницу
-    window.debounce(pinsContainer.appendChild(fragmentPins));
+    window.showCard.renderAndOpen(evt.target, pinsContainer);
   };
 
   // =========================================================================
@@ -59,9 +43,8 @@
   // =========================================================================
   // Данные успешно загружены
   var successHandler = function (arrData) {
-    arrDataTemp = arrData.slice();
     ads = window.mapFilters.sample(arrData);
-    ads.forEach(window.pin.render, fragmentPins);
+    ads.forEach(window.pin.render, window.map.fragmentPins);
     // Делаем страницу доступной для работы пользователя
     pinMain.addEventListener('mouseup', onPageStartMouseUp);
   };
@@ -71,9 +54,17 @@
   // Загружаем данные с сервера
   window.backend.load(successHandler, window.backend.errorHandler);
   // Добавляем карточку недвижимости на страницу и скрываем ее
-  mapStart.appendChild(window.showCard.renderAndOpen(pinMain, ads[0], pinsContainer));
+  mapStart.appendChild(window.showCard.renderAndOpen(pinMain, pinsContainer));
   // Клик на маркер ловим на контейнере
   pinsContainer.addEventListener('click', onPinClick);
-  // Клик на фильтрах ловим на форме с фильтрами
-  filterHousing.addEventListener('click', onFilterHousingClick);
+
+  return {
+    //  Фрагмент документа, который формируется для вставки в документ
+    fragmentPins: document.createDocumentFragment(),
+    // Добавляем маркеры на страницу
+    appendPins: function () {
+      clearPinsContainer();
+      pinsContainer.appendChild(window.map.fragmentPins);
+    }
+  };
 })();
