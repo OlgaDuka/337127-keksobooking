@@ -20,7 +20,7 @@ window.form = (function () {
   var avatarZone = dropZoneImages[0];
   var avatarUser = formNotice.querySelector('.notice__preview img');
   var photoZone = dropZoneImages[1];
-  var uploadPhotos = formNotice.querySelector('.upload');
+  var uploadPhotos = formNotice.querySelectorAll('.upload');
 
   // Вспомогательные объекты
   // Объект соответствия количества комнат количеству возможных гостей
@@ -61,6 +61,8 @@ window.form = (function () {
     [].forEach.call(features, function (element) {
       element.checked = false;
     });
+    avatarUser.src = 'img/muffin.png';
+    window.map.clearContainer(uploadPhotos[1], 2);
   };
   // Функции обратного вызова для синхронизации значений полей формы
   var syncValues = function (element, value) {
@@ -201,7 +203,7 @@ window.form = (function () {
       var img = document.createElement('IMG');
       img.width = '70';
       img.height = '70';
-      uploadPhotos.appendChild(img);
+      uploadPhotos[1].appendChild(img);
       img.src = imageLoader.result;
     });
     imageLoader.readAsDataURL(fileName);

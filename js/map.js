@@ -11,15 +11,6 @@ window.map = (function () {
   var pinsContainer = mapStart.querySelector('.map__pins');
   // Массив объектов недвижимости
   var ads = [];
-  // ========================================================================
-  // Функции
-  // ========================================================================
-  // Очищаем контейнер с пинами от предыдущего результата
-  var clearPinsContainer = function () {
-    while (pinsContainer.childElementCount > 2) {
-      pinsContainer.removeChild(pinsContainer.lastChild);
-    }
-  };
   // =========================================================================
   // Функции для обработки событий
   // =========================================================================
@@ -62,10 +53,16 @@ window.map = (function () {
   return {
     //  Фрагмент документа, который формируется для вставки в документ
     fragmentPins: document.createDocumentFragment(),
+    // Очистка контейнера
+    clearContainer: function (container, numChild) {
+      while (container.childElementCount > numChild) {
+        container.removeChild(container.lastChild);
+      }
+    },
     // Функция добавления маркеров на страницу
     appendPins: function () {
-      // Очищаем контейнер
-      clearPinsContainer();
+      // Очищаем контейнер с маркерами от предыдущего результата
+      window.map.clearContainer(pinsContainer, 2);
       // Заполняем фрагмент в соответствии с отфильтрованным массивом
       window.mapFilters.filteredData.forEach(window.pin.render, window.map.fragmentPins);
       // Добавляем фрагмент на страницу
