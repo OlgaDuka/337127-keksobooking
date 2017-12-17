@@ -200,6 +200,7 @@ window.form = (function () {
       formFields.forEach(function (element) {
         element.removeAttribute('disabled', 'disabled');
       });
+      addressHousing.value = window.pinMain.address;
     },
     init: function () {
       formFields.forEach(function (element) {

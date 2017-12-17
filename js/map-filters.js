@@ -25,8 +25,8 @@ window.mapFilters = (function () {
     // Фильтр по типу жилья
     function (arr) {
       if (objValue.typeValue !== 'any') {
-        arr = arr.filter(function (elem) {
-          return elem.offer.type === objValue.typeValue;
+        arr = arr.filter(function (element) {
+          return element.offer.type === objValue.typeValue;
         });
       }
       return arr;
@@ -37,18 +37,18 @@ window.mapFilters = (function () {
         case 'any':
           break;
         case 'low':
-          arr = arr.filter(function (elem) {
-            return elem.offer.price <= 10000;
+          arr = arr.filter(function (element) {
+            return element.offer.price <= 10000;
           });
           break;
         case 'high':
-          arr = arr.filter(function (elem) {
-            return elem.offer.price >= 50000;
+          arr = arr.filter(function (element) {
+            return element.offer.price >= 50000;
           });
           break;
         case 'middle':
-          arr = arr.filter(function (elem) {
-            return (elem.offer.price > 10000) && (elem.offer.price < 50000);
+          arr = arr.filter(function (element) {
+            return (element.offer.price > 10000) && (element.offer.price < 50000);
           });
       }
       return arr;
@@ -56,8 +56,8 @@ window.mapFilters = (function () {
     // Фильтр по количеству комнат
     function (arr) {
       if (objValue.roomsValue !== 'any') {
-        arr = arr.filter(function (elem) {
-          return elem.offer.rooms === parseInt(objValue.roomsValue, 10);
+        arr = arr.filter(function (element) {
+          return element.offer.rooms === parseInt(objValue.roomsValue, 10);
         });
       }
       return arr;
@@ -65,17 +65,17 @@ window.mapFilters = (function () {
     // Фильтр по количеству гостей
     function (arr) {
       if (objValue.guestsValue !== 'any') {
-        arr = arr.filter(function (elem) {
-          return elem.offer.guests === parseInt(objValue.guestsValue, 10);
+        arr = arr.filter(function (element) {
+          return element.offer.guests === parseInt(objValue.guestsValue, 10);
         });
       }
       return arr;
     },
     // Фильтр по удобствам
     function (arr) {
-      return arr.filter(function (elem) {
+      return arr.filter(function (element) {
         return checkedFeatures.every(function (currentFeature) {
-          return elem.offer.features.includes(currentFeature);
+          return element.offer.features.includes(currentFeature);
         });
       });
     }
@@ -86,8 +86,8 @@ window.mapFilters = (function () {
   var updatePins = function (arr) {
     var arrFiltered = arr;
     // Получаем массив данных после обработки системой фильтров
-    arrFunctionFilters.forEach(function (elem) {
-      arrFiltered = elem(arrFiltered);
+    arrFunctionFilters.forEach(function (element) {
+      arrFiltered = element(arrFiltered);
     });
     // Обрезаем полученный массив до необходимой длинны
     if (arrFiltered.length > SHOW_PIN) {
@@ -121,8 +121,8 @@ window.mapFilters = (function () {
     // Получаем список отмеченных чекбоксов
     var checkedElements = filterFeatures.querySelectorAll('input[type="checkbox"]:checked');
     // Преобразуем список в массив строк
-    checkedFeatures = [].map.call(checkedElements, function (elem) {
-      return elem.value;
+    checkedFeatures = [].map.call(checkedElements, function (element) {
+      return element.value;
     });
     updatePins(arrDataTemp);
   };

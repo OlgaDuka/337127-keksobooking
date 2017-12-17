@@ -31,7 +31,6 @@ window.map = (function () {
     pinsContainer.appendChild(window.map.fragmentPins);
     // Активируем форму
     window.form.activate();
-    window.form.addressHousing.value = window.pinMain.address;
   };
   // Клик по маркеру
   var onPinClick = function (evt) {
