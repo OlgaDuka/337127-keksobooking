@@ -16,6 +16,12 @@ window.form = (function () {
   var capacityHousing = formNotice.querySelector('#capacity');
   var features = formNotice.querySelectorAll('input[type="checkbox"]');
   var addressHousing = formNotice.querySelector('#address');
+  var dropZoneImages = formNotice.querySelectorAll('.drop-zone');
+  var avatarZone = dropZoneImages[0];
+  var avatarUser = formNotice.querySelector('.notice__preview img');
+  // var photoZone = dropZoneImages[1];
+  // var photoHousing = formNotice.querySelector('.notice__preview img');
+
   // Вспомогательные объекты
   // Объект соответствия количества комнат количеству возможных гостей
   var capacityOfRoom = {
@@ -38,8 +44,6 @@ window.form = (function () {
   // =========================================================================
   // Функции
   // =========================================================================
-  // Функция инициализации формы
-
   // Функция сброса полей формы в начальное состояние
   var resetForm = function () {
     titleHousing.value = '';
@@ -58,7 +62,6 @@ window.form = (function () {
       element.checked = false;
     });
   };
-
   // Функции обратного вызова для синхронизации значений полей формы
   var syncValues = function (element, value) {
     element.value = value;
@@ -66,7 +69,6 @@ window.form = (function () {
   var syncValueWithMin = function (element, value) {
     element.min = value;
   };
-
   // Функции для обработчиков событий
   // Выделение красным цветом рамки поля при ошибочном вводе
   var allocateBorderColor = function (element) {
@@ -78,8 +80,7 @@ window.form = (function () {
     element.style.borderWidth = '';
     element.style.borderColor = '';
   };
-
-  // для заголовка
+  // Для заголовка
   var onInvalidInput = function () {
     allocateBorderColor(titleHousing);
     if (titleHousing.validity.tooShort) {
@@ -96,11 +97,9 @@ window.form = (function () {
   var onBlurInput = function (evt) {
     evt.target.checkValidity();
   };
-
   var onFocusInput = function (evt) {
     resetBorderColor(evt.target);
   };
-
   // Автоввод времени выезда при изменении времени въезда
   var onChangeTimeIn = function () {
     window.synchronizeFields(timeInHousing, timeOutHousing, OFFER_CHECKS, OFFER_CHECKS, syncValues);
@@ -109,12 +108,10 @@ window.form = (function () {
   var onChangeTimeOut = function () {
     window.synchronizeFields(timeOutHousing, timeInHousing, OFFER_CHECKS, OFFER_CHECKS, syncValues);
   };
-
   // Изменение минимальной стоимости жилья
   var onChangeType = function () {
     window.synchronizeFields(typeHousing, priceHousing, OFFER_TYPES, arrMinPrices, syncValueWithMin);
   };
-
   // Проверка введенной суммы на валидность
   var onInvalidInputPrice = function () {
     allocateBorderColor(priceHousing);
@@ -171,6 +168,19 @@ window.form = (function () {
     window.backend.save(new FormData(formNotice), resetForm, window.backend.onError);
     evt.preventDefault();
   };
+  // Сохраняем перетаскиваемый файл
+  var onAvatarZoneDrop = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    var fileName = evt.dataTransfer[0];
+    evt.dataTransfer.dropEffect = 'copy';
+    var imageLoader = new FileReader();
+    // Слушаем событие окончания загрузки файла
+    imageLoader.addEventListener('load', function () {
+      avatarUser.src = imageLoader.result;
+    });
+    imageLoader.readAsDataURL(fileName);
+  };
 
   // Обработчики событий
   // проверка ввода заголовка
@@ -190,6 +200,8 @@ window.form = (function () {
   roomNumberHousing.addEventListener('change', onChangeRoomNumber);
   // Событие изменения количества гостей
   capacityHousing.addEventListener('change', onChangeCapacity);
+  // Событие сброса файла с аватаркой в drop-зоне
+  avatarZone.addEventListener('drop', onAvatarZoneDrop);
   // Событие отправки формы на сервер
   formNotice.addEventListener('submit', onSubmitForm);
 
