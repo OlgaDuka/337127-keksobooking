@@ -13,16 +13,16 @@ window.form = (function () {
   var timeOutHousing = formNotice.querySelector('#timeout');
   var roomNamberHousing = formNotice.querySelector('#room_number');
   var capacityHousing = formNotice.querySelector('#capacity');
-  var featuresHousing = formNotice.querySelectorAll('input[type="checkbox"]');
+  var features = formNotice.querySelectorAll('input[type="checkbox"]');
   var addressHousing = formNotice.querySelector('#address');
 
   // Вспомогательные
   // Объект соответствия количества комнат количеству возможных гостей
-  var capacityOfRooms = {
-    1: [1],
-    2: [1, 2],
-    3: [1, 2, 3],
-    100: [0]
+  var capacityOfRoom = {
+    1: ['1'],
+    2: ['1', '2'],
+    3: ['1', '2', '3'],
+    100: ['0']
   };
   // Объект соответствия типов недвижимости и минимальной цены
   var offerTypePrice = {
@@ -45,8 +45,8 @@ window.form = (function () {
     timeOutHousing.value = '12:00';
     roomNamberHousing.value = '1';
     capacityHousing.value = '1';
-    for (var i = 0; i < featuresHousing.length; i++) {
-      featuresHousing[i].checked = false;
+    for (var i = 0; i < features.length; i++) {
+      features[i].checked = false;
     }
   };
 
@@ -60,14 +60,14 @@ window.form = (function () {
 
   // Функции для обработчиков событий
   // Выделение красным цветом рамки поля при ошибочном вводе
-  var allocateBorderColor = function (elem) {
-    elem.style.borderWidth = '2px';
-    elem.style.borderColor = 'red';
+  var allocateBorderColor = function (element) {
+    element.style.borderWidth = '2px';
+    element.style.borderColor = 'red';
   };
   // Возвращение рамки в прежнее состояние
-  var resetBorderColor = function (elem) {
-    elem.style.borderWidth = '';
-    elem.style.borderColor = '';
+  var resetBorderColor = function (element) {
+    element.style.borderWidth = '';
+    element.style.borderColor = '';
   };
 
   // для заголовка
@@ -124,32 +124,24 @@ window.form = (function () {
     priceHousing.setCustomValidity('');
   };
 
-  var capacityOptionActivate = function (elem) {
-    elem.classList.remove('hidden');
+  var capacityOptionActivate = function (element) {
+    element.classList.remove('hidden');
   };
 
-  var capacityOptionDeActivate = function (elem) {
-    elem.classList.add('hidden');
+  var capacityOptionDeActivate = function (element) {
+    element.classList.add('hidden');
   };
 
   // Изменение select количества гостей в зависимости от изменения количества комнат
   var onChangeRoomNumber = function () {
-    var lenCapacitySelectDef = capacityHousing.options.length;
-    var arrCapacitySelect = capacityOfRooms[roomNamberHousing.value];
-    var lenCapacitySelect = arrCapacitySelect.length;
-    [].forEach.call(capacityHousing.options, capacityOptionActivate);
-    for (var i = 0; i < lenCapacitySelectDef; i++) {
-      var search = false;
-      for (var j = 0; j < lenCapacitySelect; j++) {
-        if (arrCapacitySelect[j] === parseInt(capacityHousing.options[i].value, 10)) {
-          search = true;
-          break;
-        }
+    var arrCapacitySelect = capacityOfRoom[roomNamberHousing.value];
+    [].forEach.call(capacityHousing.options, function (element) {
+      if (arrCapacitySelect.includes(element.value)) {
+        capacityOptionActivate(element);
+      } else {
+        capacityOptionDeActivate(element);
       }
-      if (!search) {
-        capacityOptionDeActivate(capacityHousing.options[i]);
-      }
-    }
+    });
     capacityHousing.value = arrCapacitySelect[0];
   };
   // Отправка формы на сервер

@@ -14,7 +14,7 @@ window.card = (function () {
   };
   // Подготовка строки для вставки фотографий
   var getStringPictures = function (elem) {
-    return '<li><img src="' + elem + '"></li>';
+    return '<li><img src="' + elem + '" width="70"></li>';
   };
 
   // Экспортируем функцию формирования карточки объекта недвижимости
