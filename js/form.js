@@ -1,27 +1,27 @@
 'use strict';
 window.form = (function () {
-  // Константы
+  // =========================================================================
+  // Константы и переменные
+  // =========================================================================
   var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
   var OFFER_CHECKS = ['12:00', '13:00', '14:00'];
-  // Переменные
-  // Форма
   var formNotice = document.querySelector('.notice__form');
+  var formFields = formNotice.querySelectorAll('fieldset');
   var titleHousing = formNotice.querySelector('#title');
   var typeHousing = formNotice.querySelector('#type');
   var priceHousing = formNotice.querySelector('#price');
   var timeInHousing = formNotice.querySelector('#timein');
   var timeOutHousing = formNotice.querySelector('#timeout');
-  var roomNamberHousing = formNotice.querySelector('#room_number');
+  var roomNumberHousing = formNotice.querySelector('#room_number');
   var capacityHousing = formNotice.querySelector('#capacity');
   var features = formNotice.querySelectorAll('input[type="checkbox"]');
   var addressHousing = formNotice.querySelector('#address');
-
-  // Вспомогательные
+  // Вспомогательные объекты
   // Объект соответствия количества комнат количеству возможных гостей
   var capacityOfRoom = {
     1: ['1'],
-    2: ['1', '2'],
-    3: ['1', '2', '3'],
+    2: ['2', '1'],
+    3: ['3', '2', '1'],
     100: ['0']
   };
   // Объект соответствия типов недвижимости и минимальной цены
@@ -31,23 +31,32 @@ window.form = (function () {
     house: 5000,
     palace: 10000
   };
-  var arrPrices = OFFER_TYPES.map(function (elem) {
+  // Массив минимальных цен
+  var arrMinPrices = OFFER_TYPES.map(function (elem) {
     return offerTypePrice[elem];
   });
+  // =========================================================================
+  // Функции
+  // =========================================================================
+  // Функция инициализации формы
 
   // Функция сброса полей формы в начальное состояние
   var resetForm = function () {
-    titleHousing.value = 'Милая, но очень уютная квартирка в центре Токио';
+    titleHousing.value = '';
+    titleHousing.placeholder = 'Милая, но очень уютная квартирка в центре Токио';
     addressHousing.value = window.pinMain.address;
     typeHousing.value = 'flat';
     priceHousing.value = '5000';
     timeInHousing.value = '12:00';
     timeOutHousing.value = '12:00';
-    roomNamberHousing.value = '1';
+    roomNumberHousing.value = '1';
     capacityHousing.value = '1';
-    for (var i = 0; i < features.length; i++) {
-      features[i].checked = false;
-    }
+    [].forEach.call(capacityHousing.options, function (element) {
+      capacityOptionActivate(element);
+    });
+    [].forEach.call(features, function (element) {
+      element.checked = false;
+    });
   };
 
   // Функции обратного вызова для синхронизации значений полей формы
@@ -103,7 +112,7 @@ window.form = (function () {
 
   // Изменение минимальной стоимости жилья
   var onChangeType = function () {
-    window.synchronizeFields(typeHousing, priceHousing, OFFER_TYPES, arrPrices, syncValueWithMin);
+    window.synchronizeFields(typeHousing, priceHousing, OFFER_TYPES, arrMinPrices, syncValueWithMin);
   };
 
   // Проверка введенной суммы на валидность
@@ -123,26 +132,39 @@ window.form = (function () {
     resetBorderColor(priceHousing);
     priceHousing.setCustomValidity('');
   };
-
+  // Функции включения-выключения вариантов количества гостей
   var capacityOptionActivate = function (element) {
     element.classList.remove('hidden');
   };
-
   var capacityOptionDeActivate = function (element) {
     element.classList.add('hidden');
   };
-
-  // Изменение select количества гостей в зависимости от изменения количества комнат
+  // Изменение количества гостей в зависимости от изменения количества комнат
   var onChangeRoomNumber = function () {
-    var arrCapacitySelect = capacityOfRoom[roomNamberHousing.value];
+    var arrGuests = capacityOfRoom[roomNumberHousing.value];
     [].forEach.call(capacityHousing.options, function (element) {
-      if (arrCapacitySelect.includes(element.value)) {
+      if (arrGuests.includes(element.value)) {
         capacityOptionActivate(element);
       } else {
         capacityOptionDeActivate(element);
       }
     });
-    capacityHousing.value = arrCapacitySelect[0];
+    capacityHousing.value = arrGuests[0];
+  };
+  // Изменение количества комнат, если первоначально изменение было в количестве гостей
+  var onChangeCapacity = function () {
+    var capacityValue = capacityHousing.value; // гостей - число
+    if (capacityOfRoom[roomNumberHousing.value].includes(capacityValue)) {
+      return;
+    } else {
+      for (var key in capacityOfRoom) {
+        if (capacityOfRoom[key].includes(capacityValue)) {
+          roomNumberHousing.value = key;
+          onChangeRoomNumber();
+          return;
+        }
+      }
+    }
   };
   // Отправка формы на сервер
   var onSubmitForm = function (evt) {
@@ -165,7 +187,9 @@ window.form = (function () {
   priceHousing.addEventListener('invalid', onInvalidInputPrice);
   priceHousing.addEventListener('change', onChangePrice);
   // Событие изменения количества комнат
-  roomNamberHousing.addEventListener('change', onChangeRoomNumber);
+  roomNumberHousing.addEventListener('change', onChangeRoomNumber);
+  // Событие изменения количества гостей
+  capacityHousing.addEventListener('change', onChangeCapacity);
   // Событие отправки формы на сервер
   formNotice.addEventListener('submit', onSubmitForm);
 
@@ -173,6 +197,16 @@ window.form = (function () {
     addressHousing: formNotice.querySelector('#address'),
     activate: function () {
       formNotice.classList.remove('notice__form--disabled');
+      formFields.forEach(function (element) {
+        element.removeAttribute('disabled', 'disabled');
+      });
+    },
+    init: function () {
+      formFields.forEach(function (element) {
+        element.setAttribute('disabled', 'disabled');
+      });
+      roomNumberHousing.value = '1';
+      capacityHousing.value = '1';
     }
   };
 })();
