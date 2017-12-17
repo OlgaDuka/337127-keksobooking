@@ -168,7 +168,7 @@ window.form = (function () {
   };
   // Отправка формы на сервер
   var onSubmitForm = function (evt) {
-    window.backend.save(new FormData(formNotice), resetForm, window.backend.errorHandler);
+    window.backend.save(new FormData(formNotice), resetForm, window.backend.onError);
     evt.preventDefault();
   };
 

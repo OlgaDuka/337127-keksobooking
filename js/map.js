@@ -41,7 +41,7 @@ window.map = (function () {
   // Функция обратного вызова для обмена данными с сервером
   // =========================================================================
   // Данные успешно загружены
-  var successHandler = function (arrData) {
+  var onSuccessLoad = function (arrData) {
     ads = window.mapFilters.sample(arrData);
     ads.forEach(window.pin.render, window.map.fragmentPins);
     // Делаем страницу доступной для работы пользователя
@@ -53,7 +53,7 @@ window.map = (function () {
   // Инициализация формы
   window.form.init();
   // Загружаем данные с сервера
-  window.backend.load(successHandler, window.backend.errorHandler);
+  window.backend.load(onSuccessLoad, window.backend.onError);
   // Добавляем карточку недвижимости на страницу и скрываем ее
   mapStart.appendChild(window.showCard.renderAndOpen(pinMain, pinsContainer));
   // Клик на маркер ловим на контейнере

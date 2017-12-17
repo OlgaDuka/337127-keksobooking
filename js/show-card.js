@@ -64,8 +64,8 @@ window.showCard = (function () {
 
   // Экспортируем функцию рисования и показа карточки
   return {
-    renderAndOpen: function (elem, pins) {
-      var clickedElement = elem;
+    renderAndOpen: function (element, pins) {
+      var clickedElement = element;
       while (clickedElement !== pins) {
         if (clickedElement.tagName === 'BUTTON') {
           pinDeactivate();

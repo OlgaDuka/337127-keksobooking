@@ -1,8 +1,8 @@
 'use strict';
 (function () {
-  window.synchronizeFields = function (elemMain, elemDependent, arrMain, arrDependent, funcSyncValues) {
-    var numElem = arrMain.indexOf(elemMain.value);
-    var elemDependentValue = arrDependent[numElem];
-    funcSyncValues(elemDependent, elemDependentValue);
+  window.synchronizeFields = function (elementMain, elementDependent, arrMain, arrDependent, funcSyncValues) {
+    var numElement = arrMain.indexOf(elementMain.value);
+    var elementDependentValue = arrDependent[numElement];
+    funcSyncValues(elementDependent, elementDependentValue);
   };
 })();
