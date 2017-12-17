@@ -19,8 +19,8 @@ window.form = (function () {
   var dropZoneImages = formNotice.querySelectorAll('.drop-zone');
   var avatarZone = dropZoneImages[0];
   var avatarUser = formNotice.querySelector('.notice__preview img');
-  // var photoZone = dropZoneImages[1];
-  // var photoHousing = formNotice.querySelector('.notice__preview img');
+  var photoZone = dropZoneImages[1];
+  var uploadPhotos = formNotice.querySelector('.upload');
 
   // Вспомогательные объекты
   // Объект соответствия количества комнат количеству возможных гостей
@@ -172,7 +172,7 @@ window.form = (function () {
   var onAvatarZoneDrop = function (evt) {
     evt.stopPropagation();
     evt.preventDefault();
-    var fileName = evt.dataTransfer[0];
+    var fileName = evt.dataTransfer.files[0];
     evt.dataTransfer.dropEffect = 'copy';
     var imageLoader = new FileReader();
     // Слушаем событие окончания загрузки файла
@@ -180,6 +180,39 @@ window.form = (function () {
       avatarUser.src = imageLoader.result;
     });
     imageLoader.readAsDataURL(fileName);
+  };
+  var onAvatarZoneDragenter = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+  };
+  var onAvatarZoneDragover = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+  };
+  // Сохраняем фотографии жилища
+  var onPhotoZoneDrop = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    var fileName = evt.dataTransfer.files[0];
+    evt.dataTransfer.dropEffect = 'copy';
+    var imageLoader = new FileReader();
+    // Слушаем событие окончания загрузки файла
+    imageLoader.addEventListener('load', function () {
+      var img = document.createElement('IMG');
+      img.width = '70';
+      img.height = '70';
+      uploadPhotos.appendChild(img);
+      img.src = imageLoader.result;
+    });
+    imageLoader.readAsDataURL(fileName);
+  };
+  var onPhotoZoneDragenter = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+  };
+  var onPhotoZoneDragover = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
   };
 
   // Обработчики событий
@@ -200,8 +233,14 @@ window.form = (function () {
   roomNumberHousing.addEventListener('change', onChangeRoomNumber);
   // Событие изменения количества гостей
   capacityHousing.addEventListener('change', onChangeCapacity);
-  // Событие сброса файла с аватаркой в drop-зоне
+  // События сброса файла с аватаркой в drop-зоне
   avatarZone.addEventListener('drop', onAvatarZoneDrop);
+  avatarZone.addEventListener('dragenter', onAvatarZoneDragenter);
+  avatarZone.addEventListener('dragover', onAvatarZoneDragover);
+  // События сброса файлов с фотографиями в drop-зоне
+  photoZone.addEventListener('drop', onPhotoZoneDrop);
+  photoZone.addEventListener('dragenter', onPhotoZoneDragenter);
+  photoZone.addEventListener('dragover', onPhotoZoneDragover);
   // Событие отправки формы на сервер
   formNotice.addEventListener('submit', onSubmitForm);
 
