@@ -33,7 +33,7 @@ window.map = (function () {
   // =========================================================================
   // Данные успешно загружены
   var onSuccessLoad = function (data) {
-    ads = window.mapFilters.sample(data);
+    ads = window.mapFilters.transferData(data);
     ads.forEach(window.pin.render, pinsFragment);
     // Делаем страницу доступной для работы пользователя
     window.pinMain.pinGlobal.addEventListener('mouseup', onPageStartMouseUp);

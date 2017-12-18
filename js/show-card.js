@@ -20,7 +20,7 @@ window.showCard = (function () {
   var mapCardClose = mapCard.querySelector('.popup__close');
   // Текущий маркер
   var currentPin = false;
-  var offerType = {
+  var Offertype = {
     flat: 'Квартира',
     bungalo: 'Лачуга',
     house: 'Дом',
@@ -38,20 +38,20 @@ window.showCard = (function () {
     return '<li><img src="' + elem + '" width="40"></li>';
   };
   // Формируем карточку в ДОМ-дереве
-  var render = function (objAd) {
-    mapCard.querySelector('img').src = objAd.author.avatar;
-    mapCard.querySelector('h3').textContent = objAd.offer.title;
-    mapCard.querySelector('.popup__price').innerHTML = objAd.offer.price + '&#x20bd;/ночь';
-    mapCard.querySelector('small').textContent = objAd.offer.address;
-    mapCard.querySelector('h4').textContent = offerType[objAd.offer.type];
-    linkCardP[2].textContent = objAd.offer.rooms + ' комнаты для ' + objAd.offer.guests + ' гостей';
-    linkCardP[3].textContent = 'Заезд после ' + objAd.offer.checkin + ', выезд до ' + objAd.offer.checkout;
-    linkCardP[4].textContent = objAd.offer.description;
+  var render = function (elementData) {
+    mapCard.querySelector('img').src = elementData.author.avatar;
+    mapCard.querySelector('h3').textContent = elementData.offer.title;
+    mapCard.querySelector('.popup__price').innerHTML = elementData.offer.price + '&#x20bd;/ночь';
+    mapCard.querySelector('small').textContent = elementData.offer.address;
+    mapCard.querySelector('h4').textContent = Offertype[elementData.offer.type];
+    linkCardP[2].textContent = elementData.offer.rooms + ' комнаты для ' + elementData.offer.guests + ' гостей';
+    linkCardP[3].textContent = 'Заезд после ' + elementData.offer.checkin + ', выезд до ' + elementData.offer.checkout;
+    linkCardP[4].textContent = elementData.offer.description;
     linkCardUl.innerHTML = '';
-    linkCardUl.insertAdjacentHTML('afterBegin', objAd.offer.features.map(getStringFeatures).join(' '));
+    linkCardUl.insertAdjacentHTML('afterBegin', elementData.offer.features.map(getStringFeatures).join(' '));
     mapCard.appendChild(linkCardUl);
     linkCardUlGallery.innerHTML = '';
-    linkCardUlGallery.insertAdjacentHTML('afterBegin', objAd.offer.photos.map(getStringPictures).join(' '));
+    linkCardUlGallery.insertAdjacentHTML('afterBegin', elementData.offer.photos.map(getStringPictures).join(' '));
     mapCard.appendChild(linkCardUlGallery);
     return mapCard;
   };
@@ -104,20 +104,19 @@ window.showCard = (function () {
   // Экспортируем функцию рисования и показа карточки
   return {
     renderAndOpen: function (element, pins) {
-      var clickedElement = element;
-      while (clickedElement !== pins) {
-        if (clickedElement.tagName === 'BUTTON') {
+      while (element !== pins) {
+        if (element.tagName === 'BUTTON') {
           pinDeactivate();
-          clickedElement.classList.add('map__pin--active');
-          currentPin = clickedElement;
-          if (!clickedElement.classList.contains('map__pin--main')) {
-            render(window.mapFilters.filteredData[clickedElement.dataset.numPin]);
+          element.classList.add('map__pin--active');
+          currentPin = element;
+          if (!element.classList.contains('map__pin--main')) {
+            render(window.mapFilters.filteredData[element.dataset.numPin]);
             openPopup();
           } else {
             mapCard.classList.add('hidden');
           }
         }
-        clickedElement = clickedElement.parentNode;
+        element = element.parentNode;
       }
       return mapCard;
     }
