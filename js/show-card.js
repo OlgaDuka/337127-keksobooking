@@ -20,7 +20,7 @@ window.showCard = (function () {
   var mapCardClose = mapCard.querySelector('.popup__close');
   // Текущий маркер
   var currentPin = false;
-  var Offertype = {
+  var OfferType = {
     flat: 'Квартира',
     bungalo: 'Лачуга',
     house: 'Дом',
@@ -30,12 +30,12 @@ window.showCard = (function () {
   // Функции
   // ==========================================================================
   // Подготовка строки для вставки списка удобств
-  var getStringFeatures = function (elem) {
-    return '<li class="feature feature--' + elem + '"></li>';
+  var getStringFeatures = function (element) {
+    return '<li class="feature feature--' + element + '"></li>';
   };
   // Подготовка строки для вставки фотографий
-  var getStringPictures = function (elem) {
-    return '<li><img src="' + elem + '" width="40"></li>';
+  var getStringPictures = function (element) {
+    return '<li><img src="' + element + '" width="40"></li>';
   };
   // Формируем карточку в ДОМ-дереве
   var render = function (elementData) {
@@ -43,7 +43,7 @@ window.showCard = (function () {
     mapCard.querySelector('h3').textContent = elementData.offer.title;
     mapCard.querySelector('.popup__price').innerHTML = elementData.offer.price + '&#x20bd;/ночь';
     mapCard.querySelector('small').textContent = elementData.offer.address;
-    mapCard.querySelector('h4').textContent = Offertype[elementData.offer.type];
+    mapCard.querySelector('h4').textContent = OfferType[elementData.offer.type];
     linkCardP[2].textContent = elementData.offer.rooms + ' комнаты для ' + elementData.offer.guests + ' гостей';
     linkCardP[3].textContent = 'Заезд после ' + elementData.offer.checkin + ', выезд до ' + elementData.offer.checkout;
     linkCardP[4].textContent = elementData.offer.description;
@@ -104,19 +104,20 @@ window.showCard = (function () {
   // Экспортируем функцию рисования и показа карточки
   return {
     renderAndOpen: function (element, pins) {
-      while (element !== pins) {
-        if (element.tagName === 'BUTTON') {
+      var clickedElement = element;
+      while (clickedElement !== pins) {
+        if (clickedElement.tagName === 'BUTTON') {
           pinDeactivate();
-          element.classList.add('map__pin--active');
-          currentPin = element;
-          if (!element.classList.contains('map__pin--main')) {
-            render(window.mapFilters.filteredData[element.dataset.numPin]);
+          clickedElement.classList.add('map__pin--active');
+          currentPin = clickedElement;
+          if (!clickedElement.classList.contains('map__pin--main')) {
+            render(window.mapFilters.filteredData[clickedElement.dataset.numPin]);
             openPopup();
           } else {
             mapCard.classList.add('hidden');
           }
         }
-        element = element.parentNode;
+        clickedElement = clickedElement.parentNode;
       }
       return mapCard;
     }

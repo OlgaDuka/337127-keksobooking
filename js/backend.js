@@ -1,13 +1,16 @@
 'use strict';
 window.backend = (function () {
-  // Константы
+  // Константы и переменные
   var TIME_OUT = 10000;
   var CODE_SUCSESS = 200;
   var MESSAGES = {
     errorNet: 'Произошла ошибка соединения',
     errorTime: 'Запрос не успел выполниться за '
   };
+  // Путь на сервер
   var URL = 'https://1510.dump.academy/keksobooking';
+  // Элемент DOM-дерева для вывода сообщений об ошибках
+  var node = document.createElement('div');
 
   // Функция создания запроса к серверу
   var createRequest = function (onSuccess, onError) {
@@ -44,16 +47,21 @@ window.backend = (function () {
       xhr.open('POST', URL);
       xhr.send(data);
     },
-    // Ошибка - выводим сообщение для пользователя
-    onError: function (errorMessage) {
-      var node = document.createElement('div');
+    // Функция создания элемента с сообщением об ошибке
+    createMessageError: function () {
       node.style = 'z-index: 100; margin: 5px auto; text-align: center; background-color: magenta; border: 2px solid black';
       node.style.position = 'absolute';
       node.style.left = 0;
       node.style.right = 0;
       node.style.fontSize = '30px';
-      node.textContent = errorMessage;
+      node.textContent = '';
       document.body.insertAdjacentElement('afterbegin', node);
+      node.classList.add('hidden');
+    },
+    // Ошибка - выводим сообщение для пользователя
+    onError: function (errorMessage) {
+      node.textContent = errorMessage;
+      node.classList.remove('hidden');
     }
   };
 })();

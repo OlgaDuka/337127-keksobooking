@@ -9,8 +9,6 @@ window.map = (function () {
   var pinsContainer = mapCity.querySelector('.map__pins');
   //  Фрагмент документа с маркерами для вставки в документ
   var pinsFragment = document.createDocumentFragment();
-  // Массив объектов недвижимости
-  var ads = [];
   // =========================================================================
   // Функции для обработки событий
   // =========================================================================
@@ -27,14 +25,13 @@ window.map = (function () {
   var onPinClick = function (evt) {
     window.showCard.renderAndOpen(evt.target, pinsContainer);
   };
-
   // =========================================================================
   // Функция обратного вызова для обмена данными с сервером
   // =========================================================================
   // Данные успешно загружены
   var onSuccessLoad = function (data) {
-    ads = window.mapFilters.transferData(data);
-    ads.forEach(window.pin.render, pinsFragment);
+    window.mapFilters.transferData(data);
+    window.mapFilters.filteredData.forEach(window.pin.render, pinsFragment);
     // Делаем страницу доступной для работы пользователя
     window.pinMain.pinGlobal.addEventListener('mouseup', onPageStartMouseUp);
   };
@@ -43,6 +40,8 @@ window.map = (function () {
   // =========================================================================
   // Инициализация формы
   window.form.init();
+  // Создаем и скрываем окно для информирования пользователя о возможных ошибках
+  window.backend.createMessageError();
   // Загружаем данные с сервера
   window.backend.load(onSuccessLoad, window.backend.onError);
   // Добавляем карточку недвижимости на страницу и скрываем ее

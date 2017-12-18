@@ -125,7 +125,7 @@ window.mapFilters = (function () {
     filteredData: [],
     transferData: function (data) {
       dataCopy = data.slice();
-      return dataCopy.slice(0, SHOW_PIN);
+      this.filteredData = data.slice(0, SHOW_PIN);
     },
   };
 })();
