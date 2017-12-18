@@ -19,15 +19,6 @@ window.pinMain = (function () {
   var pin = document.querySelector('.map__pin--main');
   // Контейнер, скрывающий карту
   var pinsoverlay = document.querySelector('.map__pinsoverlay');
-  // =========================================================================
-  // Функции
-  // =========================================================================
-  // Функция для определения координат острого кончика маркера
-  var getCoords = function (elem, container) {
-    var box = elem.getBoundingClientRect();
-    var boxOverlay = container.getBoundingClientRect();
-    return Math.round((box.left - boxOverlay.left + box.width / 2)) + ', ' + Math.round((box.bottom + pageYOffset + HEIGHT_MAIN_TAIL));
-  };
   // ==========================================================================
   // Обработка событий
   // ==========================================================================
@@ -60,7 +51,7 @@ window.pinMain = (function () {
     // и записываем координаты маркера в поле адреса формы
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      window.form.addressHousing.value = getCoords(pin, pinsoverlay);
+      window.form.setAddressHousing();
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -73,7 +64,12 @@ window.pinMain = (function () {
 
   // Экспортируем строку с координатами для ввода адреса в форму
   return {
-    address: getCoords(pin, pinsoverlay)
+    pinGlobal: pin,
+    // Функция для определения координат острого кончика маркера
+    getCoords: function () {
+      var box = pin.getBoundingClientRect();
+      var boxOverlay = pinsoverlay.getBoundingClientRect();
+      return Math.round((box.left - boxOverlay.left + box.width / 2)) + ', ' + Math.round((box.bottom + pageYOffset + HEIGHT_MAIN_TAIL));
+    }
   };
-
 })();

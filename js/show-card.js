@@ -14,9 +14,48 @@ window.showCard = (function () {
   // Часть шаблона - карточка объекта недвижимости
   var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
   var mapCard = mapCardTemplate.cloneNode(true);
+  var linkCardP = mapCard.querySelectorAll('p');
+  var linkCardUl = mapCard.querySelector('.popup__features');
+  var linkCardUlGallery = mapCard.querySelector('.popup__pictures');
   var mapCardClose = mapCard.querySelector('.popup__close');
   // Текущий маркер
   var currentPin = false;
+  var offerType = {
+    flat: 'Квартира',
+    bungalo: 'Лачуга',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+  // ==========================================================================
+  // Функции
+  // ==========================================================================
+  // Подготовка строки для вставки списка удобств
+  var getStringFeatures = function (elem) {
+    return '<li class="feature feature--' + elem + '"></li>';
+  };
+  // Подготовка строки для вставки фотографий
+  var getStringPictures = function (elem) {
+    return '<li><img src="' + elem + '" width="40"></li>';
+  };
+  // Формируем карточку в ДОМ-дереве
+  var render = function (objAd) {
+    mapCard.querySelector('img').src = objAd.author.avatar;
+    mapCard.querySelector('h3').textContent = objAd.offer.title;
+    mapCard.querySelector('.popup__price').innerHTML = objAd.offer.price + '&#x20bd;/ночь';
+    mapCard.querySelector('small').textContent = objAd.offer.address;
+    mapCard.querySelector('h4').textContent = offerType[objAd.offer.type];
+    linkCardP[2].textContent = objAd.offer.rooms + ' комнаты для ' + objAd.offer.guests + ' гостей';
+    linkCardP[3].textContent = 'Заезд после ' + objAd.offer.checkin + ', выезд до ' + objAd.offer.checkout;
+    linkCardP[4].textContent = objAd.offer.description;
+    linkCardUl.innerHTML = '';
+    linkCardUl.insertAdjacentHTML('afterBegin', objAd.offer.features.map(getStringFeatures).join(' '));
+    mapCard.appendChild(linkCardUl);
+    linkCardUlGallery.innerHTML = '';
+    linkCardUlGallery.insertAdjacentHTML('afterBegin', objAd.offer.photos.map(getStringPictures).join(' '));
+    mapCard.appendChild(linkCardUlGallery);
+    return mapCard;
+  };
+
   // =========================================================================
   // Функции для обработки событий
   // =========================================================================
@@ -72,7 +111,7 @@ window.showCard = (function () {
           clickedElement.classList.add('map__pin--active');
           currentPin = clickedElement;
           if (!clickedElement.classList.contains('map__pin--main')) {
-            window.card.render(mapCard, window.mapFilters.filteredData[clickedElement.dataset.numPin]);
+            render(window.mapFilters.filteredData[clickedElement.dataset.numPin]);
             openPopup();
           } else {
             mapCard.classList.add('hidden');

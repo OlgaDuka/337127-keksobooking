@@ -4,11 +4,11 @@ window.map = (function () {
   // Переменные
   // =========================================================================
   // Главная часть страницы документа
-  var mapStart = document.querySelector('.map');
-  // Маркер в центре карты
-  var pinMain = mapStart.querySelector('.map__pin--main');
+  var mapCity = document.querySelector('.map');
   // Оъект DOM, содержащий список маркеров
-  var pinsContainer = mapStart.querySelector('.map__pins');
+  var pinsContainer = mapCity.querySelector('.map__pins');
+  //  Фрагмент документа с маркерами для вставки в документ
+  var pinsFragment = document.createDocumentFragment();
   // Массив объектов недвижимости
   var ads = [];
   // =========================================================================
@@ -17,9 +17,9 @@ window.map = (function () {
   // Начало работы - нажатие на центральный маркер
   var onPageStartMouseUp = function () {
     // Активируем страницу - убираем затемнение
-    mapStart.classList.remove('map--faded');
+    mapCity.classList.remove('map--faded');
     // Добавляем маркеры на страницу
-    pinsContainer.appendChild(window.map.fragmentPins);
+    pinsContainer.appendChild(pinsFragment);
     // Активируем форму
     window.form.activate();
   };
@@ -32,11 +32,11 @@ window.map = (function () {
   // Функция обратного вызова для обмена данными с сервером
   // =========================================================================
   // Данные успешно загружены
-  var onSuccessLoad = function (arrData) {
-    ads = window.mapFilters.sample(arrData);
-    ads.forEach(window.pin.render, window.map.fragmentPins);
+  var onSuccessLoad = function (data) {
+    ads = window.mapFilters.sample(data);
+    ads.forEach(window.pin.render, pinsFragment);
     // Делаем страницу доступной для работы пользователя
-    pinMain.addEventListener('mouseup', onPageStartMouseUp);
+    window.pinMain.pinGlobal.addEventListener('mouseup', onPageStartMouseUp);
   };
   // =========================================================================
   // Инициализация и начало работы
@@ -46,27 +46,19 @@ window.map = (function () {
   // Загружаем данные с сервера
   window.backend.load(onSuccessLoad, window.backend.onError);
   // Добавляем карточку недвижимости на страницу и скрываем ее
-  mapStart.appendChild(window.showCard.renderAndOpen(pinMain, pinsContainer));
+  mapCity.appendChild(window.showCard.renderAndOpen(window.pinMain.pinGlobal, pinsContainer));
   // Клик на маркер ловим на контейнере
   pinsContainer.addEventListener('click', onPinClick);
 
   return {
-    //  Фрагмент документа, который формируется для вставки в документ
-    fragmentPins: document.createDocumentFragment(),
-    // Очистка контейнера
-    clearContainer: function (container, numChild) {
-      while (container.childElementCount > numChild) {
-        container.removeChild(container.lastChild);
-      }
-    },
     // Функция добавления маркеров на страницу
     appendPins: function () {
       // Очищаем контейнер с маркерами от предыдущего результата
-      window.map.clearContainer(pinsContainer, 2);
+      window.util.clearContainer(pinsContainer, 2);
       // Заполняем фрагмент в соответствии с отфильтрованным массивом
-      window.mapFilters.filteredData.forEach(window.pin.render, window.map.fragmentPins);
+      window.mapFilters.filteredData.forEach(window.pin.render, pinsFragment);
       // Добавляем фрагмент на страницу
-      pinsContainer.appendChild(window.map.fragmentPins);
+      pinsContainer.appendChild(pinsFragment);
     }
   };
 })();
