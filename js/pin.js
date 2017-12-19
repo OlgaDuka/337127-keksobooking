@@ -18,11 +18,11 @@ window.pin = (function () {
 
   // Экспортируем функцию формирования маркера
   return {
-    render: function (objAd, i) {
+    render: function (elementData, i) {
       var mapPin = mapPinTemplate.cloneNode(true);
-      mapPin.querySelector('img').src = objAd.author.avatar;
-      mapPin.style.left = pinStrX(objAd.location.x);
-      mapPin.style.top = pinStrY(objAd.location.y);
+      mapPin.querySelector('img').src = elementData.author.avatar;
+      mapPin.style.left = pinStrX(elementData.location.x);
+      mapPin.style.top = pinStrY(elementData.location.y);
       mapPin.dataset.numPin = i;
       this.appendChild(mapPin);
       return this;
