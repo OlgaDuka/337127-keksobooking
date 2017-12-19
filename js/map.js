@@ -44,7 +44,7 @@ window.map = (function () {
   // Создаем и скрываем окно для информирования пользователя о возможных ошибках
   window.backend.createMessageError();
   // Загружаем данные с сервера
-  window.backend.load(onSuccessLoad, window.backend.onError);
+  window.backend.load(onSuccessLoad, window.backend.onErrorLoad);
   // Добавляем карточку недвижимости на страницу и скрываем ее
   mapCity.appendChild(window.card.renderAndOpen(window.pinMain.pinGlobal, pinsContainer));
   // Клик на маркер ловим на контейнере

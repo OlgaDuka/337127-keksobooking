@@ -37,13 +37,13 @@ window.backend = (function () {
   };
   // Функции обмена данными с сервером, экспортируемые из модуля
   return {
-    load: function (onSuccess, onError) {
-      var xhr = createRequest(onSuccess, onError);
+    load: function (onSuccess, onErrorLoad) {
+      var xhr = createRequest(onSuccess, onErrorLoad);
       xhr.open('GET', URL + '/data');
       xhr.send();
     },
-    save: function (data, onSuccess, onError) {
-      var xhr = createRequest(onSuccess, onError);
+    save: function (data, onSuccess, onErrorSave) {
+      var xhr = createRequest(onSuccess, onErrorSave);
       xhr.open('POST', URL);
       xhr.send(data);
     },
@@ -59,9 +59,16 @@ window.backend = (function () {
       node.classList.add('hidden');
     },
     // Ошибка - выводим сообщение для пользователя
-    onError: function (errorMessage) {
+    onErrorLoad: function (errorMessage) {
       node.textContent = errorMessage;
       node.classList.remove('hidden');
+      node.style.top = '0px';
+    },
+    // Ошибка - выводим сообщение для пользователя
+    onErrorSave: function (errorMessage) {
+      node.textContent = errorMessage;
+      node.classList.remove('hidden');
+      node.style.top = '1450px';
     },
     // Убираем ошибку
     removeError: function () {

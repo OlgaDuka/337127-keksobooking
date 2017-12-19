@@ -65,13 +65,11 @@ window.form = (function () {
   // Функции для обработчиков событий
   // Выделение красным цветом рамки поля при ошибочном вводе
   var allocateBorderColor = function (element) {
-    element.style.borderWidth = '2px';
     element.style.borderColor = 'red';
   };
   // Возвращение рамки в прежнее состояние
   var resetBorderColor = function (element) {
-    element.style.borderWidth = '';
-    element.style.borderColor = '';
+    element.style.borderColor = '#d9d9d3';
   };
   // Для заголовка
   var onTitleInvalid = function () {
@@ -204,7 +202,7 @@ window.form = (function () {
   };
   // Отправка формы на сервер
   var onFormSubmit = function (evt) {
-    window.backend.save(new FormData(formNotice), resetForm, window.backend.onError);
+    window.backend.save(new FormData(formNotice), resetForm, window.backend.onErrorSave);
     evt.preventDefault();
   };
 
