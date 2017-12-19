@@ -49,7 +49,11 @@ window.backend = (function () {
     },
     // Функция создания элемента с сообщением об ошибке
     createMessageError: function () {
-      node.style = 'z-index: 100; margin: 5px auto; text-align: center; background-color: magenta; border: 2px solid black';
+      node.style.zIndex = '100';
+      node.style.margin = '10px auto';
+      node.style.textAlign = 'center';
+      node.style.backgroundColor = 'magenta';
+      node.style.border = '2px solid black';
       node.style.position = 'absolute';
       node.style.left = 0;
       node.style.right = 0;
@@ -58,13 +62,13 @@ window.backend = (function () {
       document.body.insertAdjacentElement('afterbegin', node);
       node.classList.add('hidden');
     },
-    // Ошибка - выводим сообщение для пользователя
+    // Ошибка загрузки данных - выводим сообщение для пользователя
     onErrorLoad: function (errorMessage) {
       node.textContent = errorMessage;
       node.classList.remove('hidden');
       node.style.top = '0px';
     },
-    // Ошибка - выводим сообщение для пользователя
+    // Ошибка отправки данных - выводим сообщение для пользователя
     onErrorSave: function (errorMessage) {
       node.textContent = errorMessage;
       node.classList.remove('hidden');

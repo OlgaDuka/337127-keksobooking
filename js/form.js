@@ -3,7 +3,7 @@ window.form = (function () {
   // =========================================================================
   // Константы и переменные
   // =========================================================================
-  var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
+  var OFFER_TYPES = ['flat', 'bungalo', 'house', 'palace'];
   var OFFER_CHECKS = ['12:00', '13:00', '14:00'];
   var MIN_PRICES = [1000, 0, 5000, 10000];
   var formNotice = document.querySelector('.notice__form');
