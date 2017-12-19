@@ -25,7 +25,7 @@ window.form = (function () {
 
   // Вспомогательные объекты
   // Объект соответствия количества комнат количеству возможных гостей
-  var capacityOfRoom = {
+  var CapacityOfRoom = {
     1: ['1'],
     2: ['2', '1'],
     3: ['3', '2', '1'],
@@ -36,6 +36,7 @@ window.form = (function () {
   // =========================================================================
   // Функция сброса полей формы в начальное состояние
   var resetForm = function () {
+    window.backend.removeError();
     titleHousing.value = '';
     titleHousing.placeholder = 'Милая, но очень уютная квартирка в центре Токио';
     window.form.setAddressHousing();
@@ -130,7 +131,7 @@ window.form = (function () {
   };
   // Изменение количества гостей в зависимости от изменения количества комнат
   var onRoomNumberChange = function () {
-    var arrGuests = capacityOfRoom[roomNumberHousing.value];
+    var arrGuests = CapacityOfRoom[roomNumberHousing.value];
     [].forEach.call(capacityHousing.options, function (element) {
       if (arrGuests.includes(element.value)) {
         activateCapacityOption(element);
@@ -143,11 +144,11 @@ window.form = (function () {
   // Изменение количества комнат, если первоначально изменение было в количестве гостей
   var onCapacityChange = function () {
     var capacityValue = capacityHousing.value; // гостей - число
-    if (capacityOfRoom[roomNumberHousing.value].includes(capacityValue)) {
+    if (CapacityOfRoom[roomNumberHousing.value].includes(capacityValue)) {
       return;
     } else {
-      for (var key in capacityOfRoom) {
-        if (capacityOfRoom[key].includes(capacityValue)) {
+      for (var key in CapacityOfRoom) {
+        if (CapacityOfRoom[key].includes(capacityValue)) {
           roomNumberHousing.value = key;
           onRoomNumberChange();
           return;
@@ -243,13 +244,13 @@ window.form = (function () {
     },
     activate: function () {
       formNotice.classList.remove('notice__form--disabled');
-      formFields.forEach(function (element) {
+      [].forEach.call(formFields, function (element) {
         element.removeAttribute('disabled', 'disabled');
       });
       window.form.setAddressHousing();
     },
     init: function () {
-      formFields.forEach(function (element) {
+      [].forEach.call(formFields, function (element) {
         element.setAttribute('disabled', 'disabled');
       });
       roomNumberHousing.value = '1';

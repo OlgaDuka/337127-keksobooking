@@ -3,7 +3,7 @@ window.backend = (function () {
   // Константы и переменные
   var TIME_OUT = 10000;
   var CODE_SUCSESS = 200;
-  var MESSAGES = {
+  var Messages = {
     errorNet: 'Произошла ошибка соединения',
     errorTime: 'Запрос не успел выполниться за '
   };
@@ -26,11 +26,11 @@ window.backend = (function () {
     });
     // Обработка ошибки во время загрузки
     xhr.addEventListener('error', function () {
-      onError(MESSAGES.errorNet);
+      onError(Messages.errorNet);
     });
     // Обработка слишком долгого ожидания загрузки
     xhr.addEventListener('timeout', function () {
-      onError(MESSAGES.errorTime + xhr.timeout + 'мс');
+      onError(Messages.errorTime + xhr.timeout + 'мс');
     });
     xhr.timeout = TIME_OUT;
     return xhr;
@@ -62,6 +62,11 @@ window.backend = (function () {
     onError: function (errorMessage) {
       node.textContent = errorMessage;
       node.classList.remove('hidden');
+    },
+    // Убираем ошибку
+    removeError: function () {
+      node.textContent = '';
+      node.classList.add('hidden');
     }
   };
 })();

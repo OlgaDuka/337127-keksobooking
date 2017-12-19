@@ -4,9 +4,9 @@ window.pinMain = (function () {
   // Константы
   // =========================================================================
   // Ограничения перемещения маркера по высоте
-  var borderY = {
-    min: 100,
-    max: 500
+  var BorderY = {
+    MIN: 100,
+    MAX: 500
   };
   // Высота главного маркера
   var HEIGHT_MAIN_PIN = 65;
@@ -43,7 +43,7 @@ window.pinMain = (function () {
         y: moveEvt.clientY
       };
       pin.style.left = (pin.offsetLeft - shift.x) + 'px';
-      if ((pin.offsetTop - shift.y) >= (borderY.min - (HEIGHT_MAIN_PIN / 2 + HEIGHT_MAIN_TAIL)) && (pin.offsetTop - shift.y) <= (borderY.max - (HEIGHT_MAIN_PIN / 2 + HEIGHT_MAIN_TAIL))) {
+      if ((pin.offsetTop - shift.y) >= (BorderY.MIN - (HEIGHT_MAIN_PIN / 2 + HEIGHT_MAIN_TAIL)) && (pin.offsetTop - shift.y) <= (BorderY.MAX - (HEIGHT_MAIN_PIN / 2 + HEIGHT_MAIN_TAIL))) {
         pin.style.top = (pin.offsetTop - shift.y) + 'px';
       }
     };

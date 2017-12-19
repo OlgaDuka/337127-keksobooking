@@ -23,7 +23,7 @@ window.map = (function () {
   };
   // Клик по маркеру
   var onPinClick = function (evt) {
-    window.showCard.renderAndOpen(evt.target, pinsContainer);
+    window.card.renderAndOpen(evt.target, pinsContainer);
   };
   // =========================================================================
   // Функция обратного вызова для обмена данными с сервером
@@ -31,6 +31,7 @@ window.map = (function () {
   // Данные успешно загружены
   var onSuccessLoad = function (data) {
     window.mapFilters.transferData(data);
+    window.backend.removeError();
     window.mapFilters.filteredData.forEach(window.pin.render, pinsFragment);
     // Делаем страницу доступной для работы пользователя
     window.pinMain.pinGlobal.addEventListener('mouseup', onPageStartMouseUp);
@@ -45,7 +46,7 @@ window.map = (function () {
   // Загружаем данные с сервера
   window.backend.load(onSuccessLoad, window.backend.onError);
   // Добавляем карточку недвижимости на страницу и скрываем ее
-  mapCity.appendChild(window.showCard.renderAndOpen(window.pinMain.pinGlobal, pinsContainer));
+  mapCity.appendChild(window.card.renderAndOpen(window.pinMain.pinGlobal, pinsContainer));
   // Клик на маркер ловим на контейнере
   pinsContainer.addEventListener('click', onPinClick);
 

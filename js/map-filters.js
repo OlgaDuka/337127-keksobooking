@@ -8,10 +8,10 @@ window.mapFilters = (function () {
   var dataCopy = [];
   // объект c текущими значениями фильтров
   var FilterValue = {
-    'housing-type': 'any',
-    'housing-price': 'any',
-    'housing-rooms': 'any',
-    'housing-guests': 'any'
+    type: 'any',
+    price: 'any',
+    rooms: 'any',
+    guests: 'any'
   };
   // Отмеченные пользователем удобства
   var checkedFeatures = [];
@@ -28,16 +28,16 @@ window.mapFilters = (function () {
   var filterFunctions = [
     // Фильтр по типу жилья
     function (arr) {
-      if (FilterValue['housing-type'] !== 'any') {
+      if (FilterValue.type !== 'any') {
         arr = arr.filter(function (element) {
-          return element.offer.type === FilterValue['housing-type'];
+          return element.offer.type === FilterValue.type;
         });
       }
       return arr;
     },
     // Фильтр по стоимости
     function (arr) {
-      switch (FilterValue['housing-price']) {
+      switch (FilterValue.price) {
         case 'any':
           break;
         case 'low':
@@ -59,18 +59,18 @@ window.mapFilters = (function () {
     },
     // Фильтр по количеству комнат
     function (arr) {
-      if (FilterValue['housing-rooms'] !== 'any') {
+      if (FilterValue.rooms !== 'any') {
         arr = arr.filter(function (element) {
-          return element.offer.rooms === parseInt(FilterValue['housing-rooms'], 10);
+          return element.offer.rooms === parseInt(FilterValue.rooms, 10);
         });
       }
       return arr;
     },
     // Фильтр по количеству гостей
     function (arr) {
-      if (FilterValue['housing-guests'] !== 'any') {
+      if (FilterValue.guests !== 'any') {
         arr = arr.filter(function (element) {
-          return element.offer.guests === parseInt(FilterValue['housing-guests'], 10);
+          return element.offer.guests === parseInt(FilterValue.guests, 10);
         });
       }
       return arr;
@@ -89,7 +89,8 @@ window.mapFilters = (function () {
   // =========================================================================
   var onFiltersChange = function (evt) {
     // Выставляем значение сработавшего фильтра в объекте текущих значений фильтров
-    FilterValue[evt.target.name] = evt.target.value;
+    var filterName = evt.target.name.substring(8);
+    FilterValue[filterName] = evt.target.value;
     // Копируем исходные данные для фильтрования
     window.mapFilters.filteredData = dataCopy.slice();
     // Получаем список отмеченных чекбоксов
