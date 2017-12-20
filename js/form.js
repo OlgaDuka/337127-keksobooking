@@ -39,6 +39,11 @@ window.form = (function () {
   // =========================================================================
   // Функция сброса полей формы в начальное состояние
   var resetForm = function () {
+    var childs = uploadPhoto.querySelectorAll('img');
+    [].forEach.call(childs, function (element) {
+      uploadPhoto.removeChild(element);
+    });
+    avatarUser.src = 'img/muffin.png';
     window.backend.removeError();
     titleHousing.value = '';
     titleHousing.placeholder = 'Милая, но очень уютная квартирка в центре Токио';
@@ -55,8 +60,6 @@ window.form = (function () {
     [].forEach.call(features, function (element) {
       element.checked = false;
     });
-    avatarUser.src = 'img/muffin.png';
-    window.util.clearContainer(uploadPhoto, 1);
   };
   // Функции обратного вызова для синхронизации значений полей формы
   var syncValues = function (element, value) {
@@ -159,31 +162,33 @@ window.form = (function () {
   };
   // Добавление фотографий на форму
   var upLoadImage = function (evt, getFile, showMiniFile) {
-    var file = getFile(evt);
-    var fileName = file.name.toLowerCase();
-    var matches = FILE_TYPES.some(function (element) {
-      return fileName.endsWith(element);
-    });
-    if (matches) {
-      var imageLoader = new FileReader();
-      imageLoader.addEventListener('load', function (event) {
-        var content = event.target.result;
-        showMiniFile(content);
+    var files = getFile(evt);
+    [].forEach.call(files, function (file) {
+      var fileName = file.name.toLowerCase();
+      var matches = FILE_TYPES.some(function (element) {
+        return fileName.endsWith(element);
       });
-      imageLoader.readAsDataURL(file);
-    }
+      if (matches) {
+        var imageLoader = new FileReader();
+        imageLoader.addEventListener('load', function (event) {
+          var content = event.target.result;
+          showMiniFile(content);
+        });
+        imageLoader.readAsDataURL(file);
+      }
+    });
   };
   // Получаем файл фото при перетаскивании
   var getDraggedFile = function (evt) {
     evt.stopPropagation();
     evt.preventDefault();
-    var file = evt.dataTransfer.files[0];
+    var files = evt.dataTransfer.files;
     evt.dataTransfer.dropEffect = 'copy';
-    return file;
+    return files;
   };
   // Получаем файл фото через диалог
   var getDialogFile = function (evt) {
-    return evt.target.files[0];
+    return evt.target.files;
   };
   // Показываем миниатюры на форме
   var showMiniAvatar = function (content) {
@@ -277,6 +282,7 @@ window.form = (function () {
       });
       roomNumberHousing.value = '1';
       capacityHousing.value = '1';
+      fileChoosers[1].setAttribute('multiple', true);
     }
   };
 })();
