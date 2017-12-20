@@ -148,9 +148,7 @@ window.form = (function () {
   // Изменение количества комнат, если первоначально изменение было в количестве гостей
   var onCapacityChange = function () {
     var capacityValue = capacityHousing.value;
-    if (CapacityOfRoom[roomNumberHousing.value].includes(capacityValue)) {
-      return;
-    } else {
+    if (!CapacityOfRoom[roomNumberHousing.value].includes(capacityValue)) {
       for (var key in CapacityOfRoom) {
         if (CapacityOfRoom[key].includes(capacityValue)) {
           roomNumberHousing.value = key;
@@ -170,9 +168,8 @@ window.form = (function () {
       });
       if (matches) {
         var imageLoader = new FileReader();
-        imageLoader.addEventListener('load', function (event) {
-          var content = event.target.result;
-          showMiniFile(content);
+        imageLoader.addEventListener('load', function (e) {
+          showMiniFile(e.target.result);
         });
         imageLoader.readAsDataURL(file);
       }
