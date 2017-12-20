@@ -54,7 +54,12 @@ window.map = (function () {
     // Функция добавления маркеров на страницу
     appendPins: function () {
       // Очищаем контейнер с маркерами от предыдущего результата
-      window.util.clearContainer(pinsContainer, 2);
+      var childs = pinsContainer.querySelectorAll('.map__pin');
+      [].forEach.call(childs, function (element) {
+        if (!element.classList.contains('map__pin--main')) {
+          pinsContainer.removeChild(element);
+        }
+      });
       // Заполняем фрагмент в соответствии с отфильтрованным массивом
       window.mapFilters.filteredData.forEach(window.pin.render, pinsFragment);
       // Добавляем фрагмент на страницу

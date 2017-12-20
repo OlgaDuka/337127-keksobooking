@@ -14,9 +14,9 @@ window.card = (function () {
   // Часть шаблона - карточка объекта недвижимости
   var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
   var mapCard = mapCardTemplate.cloneNode(true);
-  var linkCardP = mapCard.querySelectorAll('p');
-  var linkCardUl = mapCard.querySelector('.popup__features');
-  var linkCardUlGallery = mapCard.querySelector('.popup__pictures');
+  var descriptionContainer = mapCard.querySelectorAll('p');
+  var featuresContainer = mapCard.querySelector('.popup__features');
+  var photosContainer = mapCard.querySelector('.popup__pictures');
   var mapCardClose = mapCard.querySelector('.popup__close');
   // Текущий маркер
   var currentPin = false;
@@ -44,15 +44,15 @@ window.card = (function () {
     mapCard.querySelector('.popup__price').innerHTML = elementData.offer.price + '&#x20bd;/ночь';
     mapCard.querySelector('small').textContent = elementData.offer.address;
     mapCard.querySelector('h4').textContent = OfferType[elementData.offer.type];
-    linkCardP[2].textContent = elementData.offer.rooms + ' комнаты для ' + elementData.offer.guests + ' гостей';
-    linkCardP[3].textContent = 'Заезд после ' + elementData.offer.checkin + ', выезд до ' + elementData.offer.checkout;
-    linkCardP[4].textContent = elementData.offer.description;
-    linkCardUl.innerHTML = '';
-    linkCardUl.insertAdjacentHTML('afterBegin', elementData.offer.features.map(getStringFeatures).join(' '));
-    mapCard.appendChild(linkCardUl);
-    linkCardUlGallery.innerHTML = '';
-    linkCardUlGallery.insertAdjacentHTML('afterBegin', elementData.offer.photos.map(getStringPictures).join(' '));
-    mapCard.appendChild(linkCardUlGallery);
+    descriptionContainer[2].textContent = elementData.offer.rooms + ' комнаты для ' + elementData.offer.guests + ' гостей';
+    descriptionContainer[3].textContent = 'Заезд после ' + elementData.offer.checkin + ', выезд до ' + elementData.offer.checkout;
+    descriptionContainer[4].textContent = elementData.offer.description;
+    featuresContainer.innerHTML = '';
+    featuresContainer.insertAdjacentHTML('afterBegin', elementData.offer.features.map(getStringFeatures).join(' '));
+    mapCard.appendChild(featuresContainer);
+    photosContainer.innerHTML = '';
+    photosContainer.insertAdjacentHTML('afterBegin', elementData.offer.photos.map(getStringPictures).join(' '));
+    mapCard.appendChild(photosContainer);
     return mapCard;
   };
 
