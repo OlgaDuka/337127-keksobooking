@@ -1,5 +1,5 @@
 'use strict';
-window.pinMain = (function () {
+(function () {
   // =========================================================================
   // Константы
   // =========================================================================
@@ -63,7 +63,7 @@ window.pinMain = (function () {
   pin.addEventListener('mousedown', onPinMainMousedown);
 
   // Экспортируем строку с координатами для ввода адреса в форму
-  return {
+  window.pinMain = {
     pinGlobal: pin,
     // Функция для определения координат острого кончика маркера
     getCoords: function () {

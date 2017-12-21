@@ -1,5 +1,37 @@
 'use strict';
-window.mapFilters = (function () {
+/* Уважаемый наставник,
+прошу обратить Ваше внимание на то, что во всех модулях
+проекта для ограничения глобальной области видимости от лишних переменных и
+функций, которые нужны только внутри модулей, используются функции IIFE.
+На лекции нам давали два варианта синтаксиса для использования этих функций.
+Модули в глобальной области видны все. Иначе невозможна их работа.
+К данным модуля мы обращаемся как window.имя-модуля.переменная-или-функция
+И как мы напишем, по 1 или 2 варианту
+
+1. window.имя-модуля = (function() {
+тело модуля
+return {
+тут то, что экспортируем
+};
+}) ();
+
+2. (function () {
+тело модуля
+window.имя-модуля = {
+тут то, что экспортируем
+};
+}) ();
+
+разницы нет. В любом варианте модуль обернут в IIFE и наружу ничего не видно,
+кроме того, что мы запишем в объект для экспорта.
+Посмотрите еще раз, пожалуйста. Все модули завернуты в IIFE-функции.
+
+P.S. Игорь Алексеенко признал, что модули написаны правильно, но попросил
+переписать на вариант синтаксиса, принятый в Академии за основной.
+В дальнейшем пообещал точнее сформулировать критерий. Так что я переделала.
+А вариант, который был, вы можете еще раз посмотреть в предыдущем архиве.
+*/
+(function () {
   // ==========================================================================
   // Константы и переменные
   // =========================================================================
@@ -7,7 +39,7 @@ window.mapFilters = (function () {
   // Рабочая копия массива полученных с сервера данных
   var dataCopy = [];
   // объект c текущими значениями фильтров
-  var FilterValue = {
+  var filterValue = {
     type: 'any',
     price: 'any',
     rooms: 'any',
@@ -28,16 +60,16 @@ window.mapFilters = (function () {
   var filterFunctions = [
     // Фильтр по типу жилья
     function (arr) {
-      if (FilterValue.type !== 'any') {
+      if (filterValue.type !== 'any') {
         arr = arr.filter(function (element) {
-          return element.offer.type === FilterValue.type;
+          return element.offer.type === filterValue.type;
         });
       }
       return arr;
     },
     // Фильтр по стоимости
     function (arr) {
-      switch (FilterValue.price) {
+      switch (filterValue.price) {
         case 'any':
           break;
         case 'low':
@@ -59,18 +91,18 @@ window.mapFilters = (function () {
     },
     // Фильтр по количеству комнат
     function (arr) {
-      if (FilterValue.rooms !== 'any') {
+      if (filterValue.rooms !== 'any') {
         arr = arr.filter(function (element) {
-          return element.offer.rooms === parseInt(FilterValue.rooms, 10);
+          return element.offer.rooms === parseInt(filterValue.rooms, 10);
         });
       }
       return arr;
     },
     // Фильтр по количеству гостей
     function (arr) {
-      if (FilterValue.guests !== 'any') {
+      if (filterValue.guests !== 'any') {
         arr = arr.filter(function (element) {
-          return element.offer.guests === parseInt(FilterValue.guests, 10);
+          return element.offer.guests === parseInt(filterValue.guests, 10);
         });
       }
       return arr;
@@ -90,7 +122,7 @@ window.mapFilters = (function () {
   var onFiltersChange = function (evt) {
     // Выставляем значение сработавшего фильтра в объекте текущих значений фильтров
     var filterName = evt.target.name.substring(8);
-    FilterValue[filterName] = evt.target.value;
+    filterValue[filterName] = evt.target.value;
     // Копируем исходные данные для фильтрования
     window.mapFilters.filteredData = dataCopy.slice();
     // Получаем список отмеченных чекбоксов
@@ -100,8 +132,8 @@ window.mapFilters = (function () {
       return element.value;
     });
     // Получаем массив данных после обработки системой фильтров
-    filterFunctions.forEach(function (element) {
-      window.mapFilters.filteredData = element(window.mapFilters.filteredData);
+    filterFunctions.forEach(function (getFiltered) {
+      window.mapFilters.filteredData = getFiltered(window.mapFilters.filteredData);
     });
     // Обрезаем полученный массив до необходимой длинны
     if (window.mapFilters.filteredData.length > SHOW_PIN) {
@@ -122,7 +154,7 @@ window.mapFilters = (function () {
   // Экспортируем функцию, принимающую массив данных с сервера,
   // и отфильтрованный массив данных
   // ==========================================================================
-  return {
+  window.mapFilters = {
     filteredData: [],
     transferData: function (data) {
       dataCopy = data.slice();

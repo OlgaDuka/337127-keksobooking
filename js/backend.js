@@ -1,11 +1,11 @@
 'use strict';
-window.backend = (function () {
+(function () {
   // Константы и переменные
   var TIME_OUT = 10000;
   var CODE_SUCSESS = 200;
   var Messages = {
-    errorNet: 'Произошла ошибка соединения',
-    errorTime: 'Запрос не успел выполниться за '
+    ERROR_NET: 'Произошла ошибка соединения',
+    ERROR_TIME: 'Запрос не успел выполниться за '
   };
   // Путь на сервер
   var URL = 'https://1510.dump.academy/keksobooking';
@@ -26,17 +26,17 @@ window.backend = (function () {
     });
     // Обработка ошибки во время загрузки
     xhr.addEventListener('error', function () {
-      onError(Messages.errorNet);
+      onError(Messages.ERROR_NET);
     });
     // Обработка слишком долгого ожидания загрузки
     xhr.addEventListener('timeout', function () {
-      onError(Messages.errorTime + xhr.timeout + 'мс');
+      onError(Messages.ERROR_TIME + xhr.timeout + 'мс');
     });
     xhr.timeout = TIME_OUT;
     return xhr;
   };
   // Функции обмена данными с сервером, экспортируемые из модуля
-  return {
+  window.backend = {
     load: function (onSuccess, onErrorLoad) {
       var xhr = createRequest(onSuccess, onErrorLoad);
       xhr.open('GET', URL + '/data');
