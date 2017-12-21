@@ -1,5 +1,5 @@
 'use strict';
-window.card = (function () {
+(function () {
   // =========================================================================
   // Константы
   // =========================================================================
@@ -102,7 +102,7 @@ window.card = (function () {
   mapCardClose.addEventListener('keydown', onCardCloseEnterPress);
 
   // Экспортируем функцию рисования и показа карточки
-  return {
+  window.card = {
     renderAndOpen: function (element, pins) {
       var clickedElement = element;
       while (clickedElement !== pins) {

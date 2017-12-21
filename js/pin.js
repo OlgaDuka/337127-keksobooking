@@ -1,5 +1,5 @@
 'use strict';
-window.pin = (function () {
+(function () {
   // Константы
   // Размер маркера по Y
   var PIN_Y = 46;
@@ -17,7 +17,7 @@ window.pin = (function () {
   };
 
   // Экспортируем функцию формирования маркера
-  return {
+  window.pin = {
     render: function (elementData, i) {
       var mapPin = mapPinTemplate.cloneNode(true);
       mapPin.querySelector('img').src = elementData.author.avatar;

@@ -1,6 +1,6 @@
 'use strict';
-window.util = (function () {
-  return {
+(function () {
+  window.util = {
     // Синхронизация полей формы
     synchronizeFields: function (elementMain, elementDependent, arrMain, arrDependent, funcSyncValues) {
       var numElement = arrMain.indexOf(elementMain.value);

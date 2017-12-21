@@ -1,5 +1,5 @@
 'use strict';
-window.form = (function () {
+(function () {
   // =========================================================================
   // Константы и переменные
   // =========================================================================
@@ -261,7 +261,7 @@ window.form = (function () {
   // Событие отправки формы на сервер
   formNotice.addEventListener('submit', onFormSubmit);
 
-  return {
+  window.form = {
     // Устанавливаем значение в поле адреса
     setAddressHousing: function () {
       addressHousing.value = window.pinMain.getCoords();
